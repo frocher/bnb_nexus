@@ -1,0 +1,47 @@
+class ApplicationController < ActionController::API
+  include DeviseTokenAuth::Concerns::SetUserByToken
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :add_abilities
+  respond_to :json
+
+ protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) << :name
+  end
+
+  def abilities
+    @abilities ||= Six.new
+  end
+
+  def can?(object, action, subject)
+    abilities.allowed?(object, action, subject)
+  end
+
+  def add_abilities
+    abilities << Ability
+  end
+
+  def paginate(relation)
+    per_page  = params[:per_page].to_i
+    paginated = relation.page(params[:page]).per(per_page)
+    add_pagination_headers(paginated, per_page)
+
+    paginated
+  end
+
+  def add_pagination_headers(paginated, per_page)
+    request_url = request.url.split('?').first
+
+    links = []
+    links << %(<#{request_url}?page=#{paginated.current_page - 1}&per_page=#{per_page}>; rel="prev") unless paginated.first_page?
+    links << %(<#{request_url}?page=#{paginated.current_page + 1}&per_page=#{per_page}>; rel="next") unless paginated.last_page?
+    links << %(<#{request_url}?page=1&per_page=#{per_page}>; rel="first")
+    links << %(<#{request_url}?page=#{paginated.total_pages}&per_page=#{per_page}>; rel="last")
+
+    response.headers['Link'] = links.join(', ')
+  end
+
+
+end
