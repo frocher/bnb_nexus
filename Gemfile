@@ -4,8 +4,12 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.0'
 
 gem 'rails-api'
+gem 'jbuilder'
 
 gem 'sqlite3'
+
+# Validation
+gem 'validate_url'
 
 # Pagination
 gem 'kaminari'

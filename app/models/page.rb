@@ -7,6 +7,6 @@ class Page < ActiveRecord::Base
   #
   # Validations
   #
-  validates :url, presence: true
+  validates :url, url: true
 
 end

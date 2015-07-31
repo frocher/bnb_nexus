@@ -9,4 +9,45 @@ class SitesController < ApplicationController
     end
     render json: @sites
   end
+
+  def create
+    Site.transaction do
+      begin
+        @site = Site.new
+        @page = Page.new
+
+        @site.name = params[:name]
+        @site.save!
+
+        @page.url = params[:url]
+        @page.site = @site
+        @page.save!
+
+        member = SiteMember.new
+        member.site = @site
+        member.user = current_user
+        member.role = :admin
+        member.save!
+
+        render json: @site
+      rescue ActiveRecord::RecordInvalid
+        if @site.errors.count != 0
+          render json: { errors: @site.errors}, status: 422
+        else
+          render json: { errors: @page.errors}, status: 422
+        end
+      end
+    end
+  end
+
+  def update
+    # TODO
+  end
+
+private
+
+  def site_params
+    params.require(:site).permit(:name, :url)
+  end
+
 end
