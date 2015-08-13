@@ -4,8 +4,8 @@ class User < ActiveRecord::Base
   before_create :record_first_admin
 
 
-  has_many :site_members, dependent: :destroy
-  has_many :sites, through: :site_members
+  has_many :page_members, dependent: :destroy
+  has_many :pages, through: :page_members
 
   # Scopes
   scope :admins, -> { where(admin: true) }

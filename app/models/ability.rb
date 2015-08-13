@@ -4,7 +4,7 @@ class Ability
       return [] unless user.kind_of?(User)
 
       case subject.class.name
-      when "Site" then site_abilities(user, subject)
+      when "Page" then page_abilities(user, subject)
       else []
       end.concat(global_abilities(user))
     end
@@ -14,21 +14,21 @@ class Ability
       rules
     end
 
-    def site_abilities(user, site)
+    def page_abilities(user, page)
       rules = []
 
-      members = site.site_members
-      member = site.site_members.find_by_user_id(user.id)
+      members = page.page_members
+      member = page.page_members.find_by_user_id(user.id)
 
-      # Rules based on role in site
+      # Rules based on role in page
       if user.admin? || members.admins.include?(member)
-        rules << site_admin_rules
+        rules << page_admin_rules
 
       elsif members.masters.include?(member)
-        rules << site_master_rules
+        rules << page_master_rules
 
       elsif members.guests.include?(member)
-        rules << site_guest_rules
+        rules << page_guest_rules
 
       end
 
@@ -36,29 +36,26 @@ class Ability
     end
 
 
-    def site_guest_rules
+    def page_guest_rules
       [
-        :read_site,
-        :read_site_member
+        :read_page,
+        :read_page_member
       ]
     end
 
-    def site_master_rules
-      site_guest_rules + [
-        :create_site_member,
-        :update_site_member,
-        :delete_site_member,
-        :create_project_page,
-        :update_project_page,
-        :delete_project_page
+    def page_master_rules
+      page_guest_rules + [
+        :create_page_member,
+        :update_page_member,
+        :delete_page_member
       ]
     end
 
-    def site_admin_rules
-      site_master_rules + [
-        :create_site_member_admin,
-        :delete_site,
-        :update_site
+    def page_admin_rules
+      page_master_rules + [
+        :create_page_member_admin,
+        :delete_page,
+        :update_page
       ]
     end
   end

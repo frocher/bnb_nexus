@@ -23,29 +23,21 @@ ActiveRecord::Schema.define(version: 20150728170607) do
 
   add_index "measures", ["page_id"], name: "index_measures_on_page_id"
 
-  create_table "pages", force: :cascade do |t|
-    t.string   "url"
-    t.integer  "site_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "pages", ["site_id"], name: "index_pages_on_site_id"
-
-  create_table "site_members", force: :cascade do |t|
+  create_table "page_members", force: :cascade do |t|
     t.integer  "user_id",                null: false
-    t.integer  "site_id",                null: false
+    t.integer  "page_id",                null: false
     t.integer  "role",       default: 0, null: false
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
 
-  add_index "site_members", ["site_id"], name: "index_site_members_on_site_id"
-  add_index "site_members", ["user_id", "site_id"], name: "index_site_members_on_user_id_and_site_id", unique: true
-  add_index "site_members", ["user_id"], name: "index_site_members_on_user_id"
+  add_index "page_members", ["page_id"], name: "index_page_members_on_page_id"
+  add_index "page_members", ["user_id", "page_id"], name: "index_page_members_on_user_id_and_page_id", unique: true
+  add_index "page_members", ["user_id"], name: "index_page_members_on_user_id"
 
-  create_table "sites", force: :cascade do |t|
+  create_table "pages", force: :cascade do |t|
     t.string   "name"
+    t.string   "url"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
     t.string   "screenshot_file_name"
