@@ -5,6 +5,23 @@ class ApplicationController < ActionController::API
   before_action :add_abilities
   respond_to :json
 
+  rescue_from ActiveRecord::RecordNotFound do
+    render json: { message: '404 Not found'}, status: 404
+    update_auth_header
+  end
+
+  rescue_from Exception do |exception|
+    trace = exception.backtrace
+
+    message = "\n#{exception.class} (#{exception.message}):\n"
+    message << exception.annoted_source_code.to_s if exception.respond_to?(:annoted_source_code)
+    message << "  " << trace.join("\n  ")
+
+    logger.fatal message
+    update_auth_header
+    render json: { message: '500 Internal Server Error'}, status: 500
+  end
+
  protected
 
   def configure_permitted_parameters

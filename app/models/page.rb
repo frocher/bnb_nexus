@@ -8,7 +8,7 @@ class Page < ActiveRecord::Base
   #
   validates :name, presence: true
   validates :url, url: true
-  validates_attachment_content_type :attachment, :content_type => /\Aimage/
-  validates_attachment_size :attachment, :in => 0.kilobytes..500.kilobytes
+  validates_attachment_content_type :screenshot, :content_type => /\Aimage/
+  validates_attachment_size :screenshot, :in => 0.kilobytes..500.kilobytes
 
 end

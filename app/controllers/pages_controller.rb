@@ -5,7 +5,7 @@ class PagesController < ApplicationController
     if current_user.is_admin? && params[:admin] == 'true'
       @pages = paginate(Page.all)
     else
-      @page = paginate(@resource.pages)
+      @pages = paginate(@resource.pages)
     end
     render json: @pages
   end
