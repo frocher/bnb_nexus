@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: page_members
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer          not null
+#  page_id    :integer          not null
+#  role       :integer          default(0), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class PageMember < ActiveRecord::Base
   enum role: {guest: 0, master: 1, admin: 2}
 
