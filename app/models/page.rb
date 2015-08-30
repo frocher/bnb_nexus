@@ -1,3 +1,6 @@
+require 'open3'
+require 'tempfile'
+
 # == Schema Information
 #
 # Table name: pages
@@ -12,9 +15,15 @@
 #  screenshot_file_size    :integer
 #  screenshot_updated_at   :datetime
 #
-
 class Page < ActiveRecord::Base
-  has_attached_file :screenshot, styles: { medium: "1024x240#", thumb: "320x240#" }, default_url: "/images/:style/missing.png"
+  has_attached_file :screenshot,
+    path: ":rails_root/screenshots/:id/:style/:filename",
+    default_url: "/images/:style/missing.png",
+    styles: { medium: "", thumb: "320x240#" },
+    convert_options: {
+      medium: '-resize "1024x" +repage -crop "1024x240+0+0" -gravity North'
+    }
+
 
   has_many :measures, dependent: :destroy
 
@@ -24,18 +33,11 @@ class Page < ActiveRecord::Base
   validates :name, presence: true
   validates :url, url: true
   validates_attachment_content_type :screenshot, :content_type => /\Aimage/
-  validates_attachment_size :screenshot, :in => 0.kilobytes..500.kilobytes
+  validates_attachment_file_name :screenshot, matches: [/png\Z/, /jpe?g\Z/]
+  validates_attachment_size :screenshot, :in => 0.kilobytes..2000.kilobytes
 
-  def medium_url
-  	ApplicationController.helpers.asset_url(screenshot.url(:medium))
-  end
-
-  def thumb_url
-  	screenshot.url(:thumb)
-  end
 
   def as_json(options={})
-    super(only: [:id,:name,:url,:created_at, :updated_at],
-          methods: [:medium_url, :thumb_url])
+    super(only: [:id,:name,:url,:created_at, :updated_at])
   end
 end

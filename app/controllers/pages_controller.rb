@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:screenshot]
 
   def index
     if current_user.is_admin? && params[:admin] == 'true'
@@ -30,6 +30,14 @@ class PagesController < ApplicationController
         render json: { errors: @page.errors}, status: 422
       end
     end
+  end
+
+  def screenshot
+    @page = Page.find(params[:id])
+    path = File.join(Rails.root, 'public', 'screenshot.png')
+    path = @page.screenshot.path if @page.screenshot.exists?
+    data = File.read(path)
+    send_data data, disposition: 'inline'
   end
 
   def update

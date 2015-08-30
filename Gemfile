@@ -26,7 +26,7 @@ gem 'omniauth-google-oauth2'
 gem 'six'
 
 # Cron jobs
-gem 'whenever', :require => false
+gem 'crono'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
