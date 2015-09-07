@@ -34,10 +34,15 @@ class PagesController < ApplicationController
 
   def screenshot
     @page = Page.find(params[:id])
+    if params.has_key?(:style)
+      style = params[:style]
+    else
+      style = "original"
+    end
     path = File.join(Rails.root, 'public', 'screenshot.png')
-    path = @page.screenshot.path if @page.screenshot.exists?
+    path = @page.screenshot.path(style) if @page.screenshot.exists?
     data = File.read(path)
-    send_data data, disposition: 'inline'
+    send_data data, type: 'image/png', disposition: 'inline'
   end
 
   def update
