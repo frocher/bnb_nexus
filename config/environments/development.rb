@@ -19,6 +19,9 @@ Rails.application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
+  # Format logs
+  config.log_formatter = ::Logger::Formatter.new
+
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
 
@@ -39,6 +42,13 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.action_mailer.default_url_options = { :host => 'localhost', port: 3000 }
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }end
+  config.action_mailer.smtp_settings = { address: "localhost", port: 1025 }
+
+  # Array of probes for pages checks and measures
+  config.probes = [
+    { host: 'localhost', port: 3001 }
+  ]
+
+end

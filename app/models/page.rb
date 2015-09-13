@@ -1,6 +1,3 @@
-require 'open3'
-require 'tempfile'
-
 # == Schema Information
 #
 # Table name: pages
