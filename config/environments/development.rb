@@ -48,7 +48,7 @@ Rails.application.configure do
 
   # Array of probes for pages checks and measures
   config.probes = [
-    { host: 'localhost', port: 3001 }
+    { host: 'localhost', port: 3333 }
   ]
 
 end

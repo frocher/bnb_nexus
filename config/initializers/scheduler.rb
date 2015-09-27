@@ -16,8 +16,8 @@ end
 s.every '1h', ScreenshotsJob
 
 # Uptime task
-def counter = 1;
+r = Random.new
 Page.all.each do |mypage|
-  s.every '1m', UptimeJob, tag: mypage.id, first_at: Time.now + counter * 10
-  counter += 1
+  delta = r.rand(300)
+  s.every '5m', UptimeJob, tag: mypage.id, first_at: Time.now + delta
 end

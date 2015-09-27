@@ -17,8 +17,8 @@ class ScreenshotsJob
           page.save
           output_file.close
         else
-          logger.error stdout
-          logger.error stderr
+          Rails.logger.error stdout
+          Rails.logger.error stderr
         end
 
         break if updated > 5
