@@ -11,7 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150830150103) do
+ActiveRecord::Schema.define(version: 20151004205536) do
+
+  create_table "checks", force: :cascade do |t|
+    t.integer  "page_id",        null: false
+    t.integer  "response_start", null: false
+    t.integer  "first_paint",    null: false
+    t.integer  "speed_index",    null: false
+    t.integer  "dom_ready",      null: false
+    t.integer  "page_load_time", null: false
+    t.string   "har",            null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "checks", ["page_id"], name: "index_checks_on_page_id"
 
   create_table "crono_jobs", force: :cascade do |t|
     t.string   "job_id",            null: false
@@ -56,6 +70,16 @@ ActiveRecord::Schema.define(version: 20150830150103) do
     t.integer  "screenshot_file_size"
     t.datetime "screenshot_updated_at"
   end
+
+  create_table "uptimes", force: :cascade do |t|
+    t.integer  "page_id",    null: false
+    t.integer  "error_code", null: false
+    t.string   "error_text", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "uptimes", ["page_id"], name: "index_uptimes_on_page_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "provider",                               null: false
