@@ -4,6 +4,15 @@ db:
   environment:
     - MYSQL_ROOT_PASSWORD=toto
 
+influxdb:
+  image: tutum/influxdb:0.9
+  ports:
+    - "8083:8083"
+    - "8086:8086"
+    - "8090:8090"
+  env_file:
+    - 'env.influxdb'
+
 web:
   build: .
   command: bundle exec rails s -p 3000 -b '0.0.0.0'
@@ -13,3 +22,4 @@ web:
     - "3000:3000"
   links:
     - db
+    - influxdb

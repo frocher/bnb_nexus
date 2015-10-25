@@ -37,7 +37,6 @@ RUN git clone https://github.com/ariya/phantomjs.git /tmp/phantomjs && \
   ./build.sh --confirm --jobs 2 && mv bin/phantomjs /usr/local/bin && \
   rm -rf /tmp/phantomjs
 
-
 ENV APP_HOME /myapp
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
