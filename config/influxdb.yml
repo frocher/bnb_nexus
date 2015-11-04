@@ -1,0 +1,12 @@
+development:
+  database: 'twb'
+  username: root
+  password: root
+production:
+  database: 'twb'
+  username: root
+  password: root
+test:
+  database: 'twb'
+  username: root
+  password: root

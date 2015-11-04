@@ -1,3 +1,4 @@
+require 'json'
 require 'net/http'
 
 class UptimeJob
@@ -8,13 +9,15 @@ class UptimeJob
     page_id = job.tags[0]
     page = Page.find(page_id)
 
-    url = URI.parse("http://#{probe[:host]}:#{probe[:port]}/uptime?url=#{page.url}")
-    req = Net::HTTP::Get.new(url.to_s)
-    res = Net::HTTP.start(url.host, url.port) {|http|
-      http.request(req)
-    }
-    Rails.logger.info "*********** success for " + page.url
+    uri = URI.parse("http://#{probe[:host]}:#{probe[:port]}/uptime?url=#{page.url}")
+    res = Net::HTTP::get_response(uri)
     Rails.logger.info res.body
+    result = JSON.parse(res.body)
+    if res.code == "200" && result["status"] == "success"
+      Rails.logger.info "++++++++ success for " + page.url
+    else
+      Rails.logger.error "Error #{res.code} for url #{page.url}"
+    end
 
   end
 end

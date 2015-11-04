@@ -23,7 +23,7 @@ class Page < ActiveRecord::Base
 
 
   has_many :uptimes, dependent: :destroy
-  has_many :checks, dependent: :destroy
+  has_many :performances, dependent: :destroy
 
   #
   # Validations
