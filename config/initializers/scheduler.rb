@@ -15,9 +15,16 @@ end
 # Screenshots task...
 s.every '1h', ScreenshotsJob
 
-# Uptime task
 r = Random.new
+
+# Uptime task
 Page.all.each do |mypage|
-  delta = r.rand(300)
-  s.every '5m', UptimeJob, tag: mypage.id, first_at: Time.now + delta
+  delta = r.rand(3600)
+  s.every '1h', UptimeJob, tag: mypage.id, first_at: Time.now + delta
+end
+
+# Check task
+Page.all.each do |mypage|
+  delta = r.rand(3600)
+  s.every '5m', CheckJob, tag: mypage.id, first_at: Time.now + delta
 end
