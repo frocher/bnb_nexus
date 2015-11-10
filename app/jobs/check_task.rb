@@ -24,11 +24,11 @@ class CheckTask
     result = JSON.parse(res.body)
     if res.is_a?(Net::HTTPSuccess)
       stats = result["stats"]["default"]["statistics"]
-      response_start = stats["responseStart"]["median"]
-      first_paint    = stats["firstPaint"]["median"]
-      speed_index    = stats["speedIndex"]["median"]
-      dom_ready      = stats["domInteractive"]["median"]
-      page_load_time = stats["pageLoadTime"]["median"]
+      response_start = stats["responseStart"]["median"].to_i
+      first_paint    = stats["firstPaint"]["median"].to_i
+      speed_index    = stats["speedIndex"]["median"].to_i
+      dom_ready      = stats["domInteractive"]["median"].to_i
+      page_load_time = stats["pageLoadTime"]["median"].to_i
       PerformanceMetrics.write(page_id: page_id, response_start: response_start, first_paint: first_paint, speed_index: speed_index, dom_ready: dom_ready, page_load_time: page_load_time)
       Resque.logger.info "Success for " + page.url
     else
