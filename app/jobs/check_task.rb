@@ -2,6 +2,8 @@ require 'json'
 require 'net/http'
 
 class CheckTask
+  extend Resque::Plugins::Logger
+
   def self.enqueue(resource_id)
       Resque::Job.create(select_queue(), self, resource_id)
     end
@@ -12,12 +14,16 @@ class CheckTask
   end
 
   def self.perform(page_id)
-    Resque.logger.info "++++++++ Started CheckTask ++++++++"
+    logger.info "++++++++ Started CheckTask ++++++++"
 
     probes = Rails.application.config.probes
     probe = probes.sample
 
+    logger.info "++++++++ 1"
+
     page = Page.find(page_id)
+
+    logger.info "++++++++ 2"
 
     uri = URI.parse("http://#{probe[:host]}:#{probe[:port]}/check?url=#{page.url}")
     res = Net::HTTP::get_response(uri)
@@ -30,11 +36,11 @@ class CheckTask
       dom_ready      = stats["domInteractive"]["median"].to_i
       page_load_time = stats["pageLoadTime"]["median"].to_i
       PerformanceMetrics.write(page_id: page_id, response_start: response_start, first_paint: first_paint, speed_index: speed_index, dom_ready: dom_ready, page_load_time: page_load_time)
-      Resque.logger.info "Success for " + page.url
+      logger.info "Success for #{page.url}"
     else
-      Resque.logger.error "Error #{res.code} for url #{page.url}"
+      logger.error "Error #{res.code} for url #{page.url}"
     end
 
-    Resque.logger.info "++++++++ Ended CheckTask ++++++++"
+    logger.info "++++++++ Ended CheckTask ++++++++"
   end
 end

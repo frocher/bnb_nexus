@@ -1,6 +1,3 @@
-require 'json'
-require 'net/http'
-
 class CheckJob
   def call(job)
     Rails.logger.info "++++++++ Started CheckJob ++++++++"

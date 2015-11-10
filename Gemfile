@@ -28,6 +28,7 @@ gem 'six'
 
 # Cron jobs
 gem 'resque'
+gem 'resque-logger'
 gem 'rufus-scheduler'
 
 group :development, :test do

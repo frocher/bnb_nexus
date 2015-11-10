@@ -24,7 +24,7 @@ Page.all.each do |mypage|
 end
 
 # Check task
-Page.all.each do |mypage|
-  delta = r.rand(3600)
-  s.every '5m', CheckJob, tag: mypage.id, first_at: Time.now + delta
-end
+#Page.all.each do |mypage|
+#  delta = r.rand(3600)
+#  s.every '5m', CheckJob, tag: mypage.id, first_at: Time.now + delta
+#end

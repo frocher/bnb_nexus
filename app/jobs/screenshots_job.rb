@@ -7,20 +7,7 @@ class ScreenshotsJob
     now = Time.new
     Page.all.each do |page|
       if !page.screenshot.exists? || page.screenshot_updated_at.nil? || (now - page.screenshot_updated_at > 14400)
-        output_path = File.join(Rails.root, 'screenshots', page.id.to_s, 'original', page.id.to_s + '.png')
-        file = File.join(Rails.root, 'app', 'phantom', 'screenshot.js')
-        cmd = 'phantomjs --ssl-protocol=any ' + file + " " + page.url + " " + output_path + " 1024px*768px"
-        stdout,stderr,status = Open3.capture3(cmd)
-        if status.success?
-          output_file = File.new output_path
-          page.screenshot = output_file
-          page.save
-          output_file.close
-        else
-          Rails.logger.error stdout
-          Rails.logger.error stderr
-        end
-
+        ScreenshotsTask.enqueue(page.id)
         break if updated > 5
         updated += 1
       end
