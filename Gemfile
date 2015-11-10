@@ -27,6 +27,7 @@ gem 'omniauth-google-oauth2'
 gem 'six'
 
 # Cron jobs
+gem 'resque'
 gem 'rufus-scheduler'
 
 group :development, :test do
