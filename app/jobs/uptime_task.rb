@@ -14,6 +14,7 @@ class UptimeTask
   end
 
   def self.perform(page_id)
+    @log_name = "uptime_worker.log"
     logger.info "++++++++ Started UptimeTask ++++++++"
 
     probes = Rails.application.config.probes
@@ -26,7 +27,7 @@ class UptimeTask
     result = JSON.parse(res.body)
     if res.code == "200" && result["status"] == "success"
       UptimeMetrics.write(page_id: page_id, value: 1)
-      Resque.logger.info "Success for #{page.url}"
+      logger.info "Success for #{page.url}"
     else
       error_content = result["content"] || "empty"
       UptimeMetrics.write(page_id: page_id, value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)

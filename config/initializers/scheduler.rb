@@ -12,19 +12,10 @@ def s.on_post_trigger(job, trigger_time)
   Rails.logger.info "triggered job #{job.id}."
 end
 
-# Screenshots task...
-s.every '1h', ScreenshotsJob
-
+# Prepare jobs launches
 r = Random.new
-
-# Uptime task
-Page.all.each do |mypage|
-  delta = r.rand(3600)
-  s.every '1h', UptimeJob, tag: mypage.id, first_at: Time.now + delta
+Page.all.each do |page|
+  s.schedule_every '1h', UptimeJob, tag: page.id, first_at: Time.now + r.rand(3600)
+  s.schedule_every '15m', CheckJob, tag: page.id, first_at: Time.now + r.rand(3600)
+  s.schedule_every '1h', ScreenshotJob, tag: page.id, first_at: Time.now + r.rand(3600)
 end
-
-# Check task
-#Page.all.each do |mypage|
-#  delta = r.rand(3600)
-#  s.every '5m', CheckJob, tag: mypage.id, first_at: Time.now + delta
-#end
