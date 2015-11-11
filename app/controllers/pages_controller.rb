@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   before_action :authenticate_user!, except: [:screenshot]
+  before_action :set_page, only: [:show, :update, :destroy]
 
   def index
     if current_user.is_admin? && params[:admin] == 'true'
@@ -8,6 +9,10 @@ class PagesController < ApplicationController
       @pages = paginate(@resource.pages)
     end
     render json: @pages
+  end
+
+  def show
+    # TODO
   end
 
   def create
@@ -32,6 +37,14 @@ class PagesController < ApplicationController
     end
   end
 
+  def update
+    # TODO
+  end
+
+  def destroy
+    # TODO
+  end
+
   def screenshot
     @page = Page.find(params[:id])
     if params.has_key?(:style)
@@ -45,11 +58,13 @@ class PagesController < ApplicationController
     send_data data, type: 'image/png', disposition: 'inline'
   end
 
-  def update
-    # TODO
-  end
+
 
 private
+
+  def set_page
+    @page = Page.find(params[:id])
+  end
 
   def page_params
     params.require(:page).permit(:name, :url)
