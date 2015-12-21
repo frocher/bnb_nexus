@@ -40,6 +40,24 @@ class ApplicationController < ActionController::API
     abilities << Ability
   end
 
+  def authorize!(action, subject)
+    unless abilities.allowed?(current_user, action, subject)
+      forbidden!
+    end
+  end
+
+  def forbidden!
+    render_api_error!('403 Forbidden', 403)
+  end
+
+  def not_found!
+    render_api_error!('404 Not found', 404)
+  end
+
+  def render_api_error!(message, status)
+    render json: { message: message}, status: status
+  end
+
   def paginate(relation)
     per_page  = params[:per_page].to_i
     paginated = relation.page(params[:page]).per(per_page)

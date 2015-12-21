@@ -12,7 +12,8 @@ class PagesController < ApplicationController
   end
 
   def show
-    # TODO
+    return not_found! unless can?(current_user, :read_page, @page)
+    render json: @page
   end
 
   def create
@@ -38,11 +39,22 @@ class PagesController < ApplicationController
   end
 
   def update
-    # TODO
+    return not_found! unless can?(current_user, :update_page, @page)
+    
+    @page.name = params[:name]
+    @page.url = params[:url]
+    @page.save!
+
+    render json: @page
+
+    rescue ActiveRecord::RecordInvalid
+      render json: { errors: @page.errors}, status: 422
   end
 
   def destroy
-    # TODO
+    return not_found! unless can?(current_user, :update_page, @page)
+    @page.destroy
+    render json: @page
   end
 
   def screenshot
@@ -57,7 +69,6 @@ class PagesController < ApplicationController
     data = File.read(path)
     send_data data, type: 'image/png', disposition: 'inline'
   end
-
 
 
 private

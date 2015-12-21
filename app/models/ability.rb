@@ -27,6 +27,9 @@ class Ability
       elsif members.masters.include?(member)
         rules << page_master_rules
 
+      elsif members.editors.include?(member)
+        rules << page_editor_rules
+
       elsif members.guests.include?(member)
         rules << page_guest_rules
 
@@ -43,8 +46,14 @@ class Ability
       ]
     end
 
-    def page_master_rules
+    def page_editor_rules
       page_guest_rules + [
+        :update_page
+      ]
+    end
+
+    def page_master_rules
+      page_editor_rules + [
         :create_page_member,
         :update_page_member,
         :delete_page_member
@@ -54,8 +63,7 @@ class Ability
     def page_admin_rules
       page_master_rules + [
         :create_page_member_admin,
-        :delete_page,
-        :update_page
+        :delete_page
       ]
     end
   end

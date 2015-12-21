@@ -11,7 +11,7 @@
 #
 
 class PageMember < ActiveRecord::Base
-  enum role: {guest: 0, master: 1, admin: 2}
+  enum role: {guest: 0, editor: 1, master: 2, admin: 3}
 
   belongs_to :user
   belongs_to :page
@@ -20,9 +20,10 @@ class PageMember < ActiveRecord::Base
   validates :page, presence: true
   validates :user_id, uniqueness: { scope: [:page_id], message: "already exists in page" }
 
-  scope :guests, ->     { where("role = :role", role: 0) }
-  scope :masters, ->    { where("role = :role", role: 1) }
-  scope :admins, ->     { where("role = :role", role: 2) }
+  scope :guests,  ->  { where("role = :role", role: 0) }
+  scope :editors, ->  { where("role = :role", role: 1) }
+  scope :masters, ->  { where("role = :role", role: 2) }
+  scope :admins,  ->  { where("role = :role", role: 3) }
 
   def username
     user.name
