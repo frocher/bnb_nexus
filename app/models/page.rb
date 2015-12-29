@@ -22,9 +22,8 @@ class Page < ActiveRecord::Base
     }
 
 
-  has_many :uptimes, dependent: :destroy
-  has_many :performances, dependent: :destroy
-
+  has_many :page_members, dependent: :destroy
+  
   #
   # Validations
   #
