@@ -13,7 +13,9 @@ class PagesController < ApplicationController
 
   def show
     return not_found! unless can?(current_user, :read_page, @page)
-    render json: @page
+    editable  = can?(current_user, :edit_page, @page)
+    deletable = can?(current_user, :delete_page, @page)
+    render json: @page.merge(editable: editable).merge(deletable: deletable)
   end
 
   def create
@@ -33,7 +35,7 @@ class PagesController < ApplicationController
 
         render json: @page
       rescue ActiveRecord::RecordInvalid
-        render json: { errors: @page.errors}, status: 422
+        render json: {errors: @page.errors}, status: 422
       end
     end
   end
@@ -48,7 +50,7 @@ class PagesController < ApplicationController
     render json: @page
 
     rescue ActiveRecord::RecordInvalid
-      render json: { errors: @page.errors}, status: 422
+      render json: {errors: @page.errors}, status: 422
   end
 
   def destroy
