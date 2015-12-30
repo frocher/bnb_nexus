@@ -4,6 +4,11 @@ db:
   environment:
     - MYSQL_ROOT_PASSWORD=toto
 
+redis:
+  image: redis/3.0
+  ports:
+    - "6379:6379"
+
 influxdb:
   image: tutum/influxdb:0.9
   ports:
