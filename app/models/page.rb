@@ -23,7 +23,7 @@ class Page < ActiveRecord::Base
 
 
   has_many :page_members, dependent: :destroy
-  
+
   #
   # Validations
   #
@@ -35,6 +35,6 @@ class Page < ActiveRecord::Base
 
 
   def as_json(options={})
-    super(only: [:id,:name,:url,:created_at, :updated_at])
+    super({only: [:id,:name,:url,:created_at, :updated_at]}.merge(options || {}))
   end
 end

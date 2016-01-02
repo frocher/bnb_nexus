@@ -13,7 +13,7 @@ class Pages::UptimesController < ApplicationController
     else
       # TODO : we must not have more than X points to display
       # we must so calculate the correct interval between points
-      result = UptimeMetrics.by_page(params[:page_id]).where(time: @start_date..@end_date).time(1d).mean(:value)
+      result = UptimeMetrics.by_page(params[:page_id]).where(time: @start_date..@end_date).time('1d').mean(:value)
     end
 
   end
