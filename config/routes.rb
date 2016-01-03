@@ -3,8 +3,8 @@ Rails.application.routes.draw do
 
   resources :pages do
     scope module: :pages do
-      resources :checks, only: [:show]
-      resources :uptimes, only: [:show]
+      resources :checks, only: [:index]
+      resources :uptimes, only: [:index]
     end
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
