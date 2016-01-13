@@ -17,14 +17,16 @@ class Pages::ChecksController < ApplicationController
                     "median(speed_index) as speed_index"
       result = PerformanceMetrics.select(selectValue).by_page(params[:page_id]).where(time: @start_date..@end_date)
     else
-      # TODO : we must not have more than X points to display
-      # we must so calculate the correct interval between points
       selectValue = "mean(dom_ready) as dom_ready," \
                     "mean(first_paint) as first_paint," \
                     "mean(page_load_time) as page_load," \
                     "mean(response_start) as response_start," \
                     "mean(speed_index) as speed_index"
-      result = PerformanceMetrics.select(selectValue).by_page(params[:page_id]).where(time: @start_date..@end_date).time('1d').fill(:none)
+
+      nbDays = (@end_date - @start_date).to_i
+      interval = nbDays < 1 ? '1h' : '1d'
+
+      result = PerformanceMetrics.select(selectValue).by_page(params[:page_id]).where(time: @start_date..@end_date).time(interval).fill(:none)
     end
     render json: result
   end

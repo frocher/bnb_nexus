@@ -12,8 +12,8 @@ class Pages::UptimesController < ApplicationController
     if @type == 'median'
       result = UptimeMetrics.select("median(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date)
     else
-      # TODO : we must not have more than X points to display
-      # we must so calculate the correct interval between points
+      nbDays = (@end_date - @start_date).to_i
+      interval = nbDays < 1 ? '1h' : '1d'
       result = UptimeMetrics.select("mean(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date).time('1d').fill(:none)
     end
     render json: result
