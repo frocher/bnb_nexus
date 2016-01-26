@@ -20,3 +20,6 @@
 
 # Ignore generated files
 /screenshots/*
+
+# Ignore application configuration
+/config/application.yml

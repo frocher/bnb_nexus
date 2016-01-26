@@ -26,10 +26,12 @@ gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 gem 'six'
 
+# Configuration
+gem 'figaro'
+
 # Cron jobs
-gem 'resque'
-gem 'resque-logger'
-gem 'rufus-scheduler'
+gem 'whenever'
+gem 'sidekiq'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
