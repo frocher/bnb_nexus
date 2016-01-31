@@ -9,4 +9,8 @@ Rails.application.routes.draw do
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
 
+  if Rails.env.development?
+    require 'sidekiq/web'
+    mount Sidekiq::Web => '/sidekiq'
+  end
 end

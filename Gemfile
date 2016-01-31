@@ -44,6 +44,9 @@ group :development, :test do
   gem 'spring'
 
   gem 'annotate'
+
+  # for sidekiq ui
+  gem 'sinatra', :require => nil
 end
 
 # To use ActiveModel has_secure_password

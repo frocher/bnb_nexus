@@ -3,7 +3,7 @@
 ### Dependencies
 
 * Node.js
-* Ruby 2.2
+* Ruby 2.3
 * PhantomJS (http://www.http://phantomjs.org/)
 * InfluxDB (https://influxdata.com/time-series-platform/influxdb/)
 * Redis
@@ -17,15 +17,21 @@ With Ruby installed, run the following lines from the root of your project downl
 bundle install
 ```
 
+Start sidekiq :
+```sh
+bundle exec sidekiq
+```
+
+To write to the crontab the whenever jobs :
+```sh
+whenever -w -s 'environment=[targeted environment]'
+```
+
 To start the API server :
 ```sh
 rails s -b 0.0.0.0
 ```
 
-To start the resque jobs :
-```sh
-QUEUE=* rake environment resque:work
-```
 
 ### The docker way
 
@@ -35,6 +41,5 @@ TODO...
 
 TODO:
 * How to configure probes
-* How to configure resque
 * How to configure influxdb
 * How to configure database
