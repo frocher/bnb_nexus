@@ -7,6 +7,7 @@ gem 'rails-api'
 gem 'jbuilder'
 
 gem 'sqlite3'
+gem 'mysql2'
 gem 'influxer'
 
 # Validation
