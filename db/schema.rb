@@ -13,41 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20151004205536) do
 
-  create_table "checks", force: :cascade do |t|
-    t.integer  "page_id",        null: false
-    t.integer  "response_start", null: false
-    t.integer  "first_paint",    null: false
-    t.integer  "speed_index",    null: false
-    t.integer  "dom_ready",      null: false
-    t.integer  "page_load_time", null: false
-    t.string   "har",            null: false
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-  end
-
-  add_index "checks", ["page_id"], name: "index_checks_on_page_id"
-
-  create_table "crono_jobs", force: :cascade do |t|
-    t.string   "job_id",            null: false
-    t.text     "log"
-    t.datetime "last_performed_at"
-    t.boolean  "healthy"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
-  add_index "crono_jobs", ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
-
-  create_table "measures", force: :cascade do |t|
-    t.string   "category"
-    t.integer  "value"
-    t.integer  "page_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "measures", ["page_id"], name: "index_measures_on_page_id"
-
   create_table "page_members", force: :cascade do |t|
     t.integer  "user_id",                null: false
     t.integer  "page_id",                null: false
@@ -71,15 +36,14 @@ ActiveRecord::Schema.define(version: 20151004205536) do
     t.datetime "screenshot_updated_at"
   end
 
-  create_table "uptimes", force: :cascade do |t|
+  create_table "performances", force: :cascade do |t|
     t.integer  "page_id",    null: false
-    t.integer  "error_code", null: false
-    t.string   "error_text", null: false
+    t.string   "har",        null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  add_index "uptimes", ["page_id"], name: "index_uptimes_on_page_id"
+  add_index "performances", ["page_id"], name: "index_performances_on_page_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "provider",                               null: false
