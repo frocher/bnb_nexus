@@ -72,7 +72,4 @@ WORKDIR $APP_HOME
 ADD Gemfile* $APP_HOME/
 RUN bundle install
 
-RUN ln -sf $APP_HOME/config/database.yml /config/database.yml
-RUN ln -sf $APP_HOME/log /log
-
 ADD . $APP_HOME
