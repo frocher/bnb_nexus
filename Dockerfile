@@ -63,11 +63,16 @@ RUN apt-get install -y libqt4-webkit libqt4-dev xvfb
 # phantomjs
 RUN npm install -g phantomjs-prebuilt
 
+RUN gem install foreman
+
 ENV APP_HOME /myapp
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
 RUN bundle install
+
+RUN ln -sf /config/database.yml $APP_HOME/config/database.yml
+RUN ln -sf $APP_HOME/log /log
 
 ADD . $APP_HOME
