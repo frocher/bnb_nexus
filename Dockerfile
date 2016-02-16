@@ -52,6 +52,9 @@ RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y \
     libjpeg-dev
 
 # for image manipulation
+RUN apt-get install -y cron
+
+# for image manipulation
 RUN apt-get install -y imagemagick
 
 # for nokogiri
@@ -71,5 +74,7 @@ WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
 RUN bundle install
+
+RUN whenever -c
 
 ADD . $APP_HOME
