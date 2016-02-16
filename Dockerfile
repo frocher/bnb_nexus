@@ -76,8 +76,6 @@ WORKDIR $APP_HOME
 ADD Gemfile* $APP_HOME/
 RUN bundle install
 
-RUN whenever -c
-
 ADD . $APP_HOME
 
 # Add crontab file in the cron directory
