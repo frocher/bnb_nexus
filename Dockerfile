@@ -64,6 +64,7 @@ RUN apt-get install -y libqt4-webkit libqt4-dev xvfb
 RUN npm install -g phantomjs-prebuilt
 
 RUN gem install foreman
+RUN gem install bundler
 
 ENV APP_HOME /myapp
 RUN mkdir $APP_HOME
@@ -73,3 +74,6 @@ ADD Gemfile* $APP_HOME/
 RUN bundle install
 
 ADD . $APP_HOME
+
+# Add crontab file in the cron directory
+RUN crontab docker_crontab.conf
