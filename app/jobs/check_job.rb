@@ -11,7 +11,7 @@ class CheckJob < ActiveJob::Base
       begin
         probes = Rails.application.config.probes
         probe = probes.sample
-        uri = URI.parse("http://#{probe[:host]}:#{probe[:port]}/check?url=#{page.url}")
+        uri = URI.parse("http://#{probe['host']}:#{probe['port']}/check?url=#{page.url}")
         res = Net::HTTP::get_response(uri)
         result = JSON.parse(res.body)
         if res.is_a?(Net::HTTPSuccess)
