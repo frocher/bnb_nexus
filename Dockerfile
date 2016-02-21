@@ -52,9 +52,6 @@ RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y \
     libjpeg-dev
 
 # for image manipulation
-RUN apt-get install -y cron
-
-# for image manipulation
 RUN apt-get install -y imagemagick
 
 # for nokogiri
@@ -77,6 +74,3 @@ ADD Gemfile* $APP_HOME/
 RUN bundle install
 
 ADD . $APP_HOME
-
-# Add crontab file in the cron directory
-RUN crontab docker_crontab.conf
