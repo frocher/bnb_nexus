@@ -12,5 +12,8 @@ module TwbNexus
     config.active_record.raise_in_transactional_callbacks = true
 
     config.active_job.queue_adapter = :sidekiq
+
+    # Array of probes for pages checks and measures
+    config.probes = JSON.parse(Figaro.env.probes)
   end
 end
