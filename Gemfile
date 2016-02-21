@@ -5,6 +5,7 @@ gem 'rails', '4.2.5'
 gem 'rails-api'
 gem 'jbuilder'
 
+# Databse access
 gem 'sqlite3'
 gem 'mysql2'
 gem 'influxer'
@@ -30,7 +31,6 @@ gem 'six'
 gem 'figaro'
 
 # Cron jobs
-gem 'whenever'
 gem 'sidekiq'
 
 group :development, :test do
