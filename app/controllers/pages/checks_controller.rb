@@ -23,9 +23,8 @@ class Pages::ChecksController < ApplicationController
                     "mean(response_start) as response_start," \
                     "mean(speed_index) as speed_index"
 
-      nbDays = (@end_date - @start_date).to_i
-      interval = nbDays < 1 ? '1h' : '1d'
-
+      nbDays = (@end_date - @start_date).to_i / 86400
+      interval = nbDays <= 1 ? '1h' : '1d'
       result = PerformanceMetrics.select(selectValue).by_page(params[:page_id]).where(time: @start_date..@end_date).time(interval).fill(:none)
     end
     render json: result

@@ -12,9 +12,9 @@ class Pages::UptimesController < ApplicationController
     if @type == 'median'
       result = UptimeMetrics.select("median(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date)
     else
-      nbDays = (@end_date - @start_date).to_i
-      interval = nbDays < 1 ? '1h' : '1d'
-      result = UptimeMetrics.select("mean(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date).time('1d').fill(:none)
+      nbDays = (@end_date - @start_date).to_i / 86400
+      interval = nbDays <= 1 ? '1h' : '1d'
+      result = UptimeMetrics.select("mean(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date).time(interval).fill(:none)
     end
     render json: result
   end
