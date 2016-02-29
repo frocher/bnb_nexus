@@ -31,9 +31,6 @@ class Page < ActiveRecord::Base
   #
   validates :name, presence: true
   validates :url, url: true
-  validates_attachment_content_type :screenshot, :content_type => /\Aimage/
-  validates_attachment_file_name :screenshot, matches: [/png\Z/, /jpe?g\Z/]
-  validates_attachment_size :screenshot, :in => 0.kilobytes..2000.kilobytes
 
   def as_json(options={})
     super({only: [:id,:name,:url,:created_at, :updated_at]}.merge(options || {}))
