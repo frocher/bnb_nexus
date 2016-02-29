@@ -13,7 +13,7 @@ class ScreenshotJob < ActiveJob::Base
         if status.success?
           output_file = File.new output_path
           page.screenshot = output_file
-          page.save
+          page.save!
           output_file.close
           logger.info "Success for #{page.url}"
         else

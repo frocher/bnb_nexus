@@ -135,8 +135,6 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (= 0.3.0)
-    paperclip-meta (1.2.0)
-      paperclip (>= 3.0.2, < 5.0)
     puma (2.15.3)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -225,7 +223,6 @@ DEPENDENCIES
   omniauth-github
   omniauth-google-oauth2
   paperclip
-  paperclip-meta
   puma
   rails (= 4.2.5)
   rails-api

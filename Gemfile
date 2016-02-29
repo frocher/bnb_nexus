@@ -18,7 +18,6 @@ gem 'kaminari'
 
 # Files attachments
 gem 'paperclip'
-gem 'paperclip-meta'
 
 # Auth
 gem 'devise_token_auth', '>= 0.1.32.beta9'
