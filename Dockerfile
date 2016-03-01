@@ -51,8 +51,8 @@ RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y \
     libpng-dev \
     libjpeg-dev
 
-# for image manipulation
-RUN apt-get install -y imagemagick
+# for paperclip image manipulation
+RUN apt-get install -y file imagemagick
 
 # for nokogiri
 RUN apt-get install -y libxml2-dev libxslt1-dev
