@@ -12,6 +12,9 @@ class ScreenshotJob < ActiveJob::Base
         stdout,stderr,status = Open3.capture3(cmd)
         if status.success?
           output_file = File.new output_path
+
+          logger.info "Output path : " + output_path.to_s
+
           page.screenshot = output_file
           page.save!
           output_file.close
@@ -25,7 +28,7 @@ class ScreenshotJob < ActiveJob::Base
         logger.error "Error for #{page.url}"
         logger.error e.to_s
       end
-      ScreenshotJob.set(wait: 1.day).perform_later(page_id)
+      ScreenshotJob.set(wait: 1.hour).perform_later(page_id)
     end
     logger.info "++++++++ Ended ScreenshotJob ++++++++"
   end
