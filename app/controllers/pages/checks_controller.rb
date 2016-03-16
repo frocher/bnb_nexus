@@ -9,7 +9,7 @@ class Pages::ChecksController < ApplicationController
     @start_date = Date.parse(params[:start]).beginning_of_day
     @end_date   = Date.parse(params[:end]).end_of_day
 
-    if @type == 'median'
+    if @type == 'point'
       selectValue = "median(dom_ready) as dom_ready," \
                     "median(first_paint) as first_paint," \
                     "median(page_load_time) as page_load," \
