@@ -19,6 +19,9 @@ gem 'kaminari'
 # Files attachments
 gem 'paperclip'
 
+# Mail
+gem 'sparkpost'
+
 # Auth
 gem 'devise_token_auth', '>= 0.1.32.beta9'
 gem 'omniauth-github'
