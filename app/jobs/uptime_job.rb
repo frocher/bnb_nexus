@@ -11,7 +11,7 @@ class UptimeJob < ActiveJob::Base
       begin
         probes = Rails.application.config.probes
         probe = probes.sample
-        uri = URI.parse("http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}")
+        uri = URI.parse("http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}&token=#{probe['token']}")
         res = Net::HTTP::get_response(uri)
         result = JSON.parse(res.body)
         if res.code == "200" && result["status"] == "success"
