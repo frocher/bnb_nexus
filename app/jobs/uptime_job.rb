@@ -40,7 +40,8 @@ class UptimeJob < ActiveJob::Base
 
   def get_last_value(page)
     result = UptimeMetrics.select("last(value) as value").by_page(page.id)
-    result.value
+    records = result.load
+    records[0][:value]
   end
 
   def send_up_mail(page)
