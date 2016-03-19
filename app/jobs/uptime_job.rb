@@ -41,22 +41,22 @@ class UptimeJob < ActiveJob::Base
   def get_last_value(page)
     result = UptimeMetrics.select("last(value) as value").by_page(page.id)
     records = result.load
-    records[0][:value]
+    records.empty? ? -1 : records[0]["value"]
   end
 
   def send_up_mail(page)
-    send_mail(page, "Site up", "Your site #{page.url} is up")
+    send_mail(page, "Page up", "The page #{page.url} is up again.")
   end
 
   def send_down_mail(page)
-    send_mail(page, "Site down", "Your site #{page.url} is down")
+    send_mail(page, "Page down", "The page #{page.url} is down.")
   end
 
   def send_mail(page, title, message)
     sp = SparkPost::Client.new()
     page.page_members.each do |member|
       user = member.user
-      sp.transmission.send_message(user.email, 'jeeves@botnbot.com', title, message)
+      sp.transmission.send_message(user.email, 'jeeves.thebot@botnbot.com', title, message)
     end
   end
 end
