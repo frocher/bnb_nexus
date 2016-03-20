@@ -28,4 +28,11 @@ class PageMember < ActiveRecord::Base
   def username
     user.name
   end
+
+  def as_json(options={})
+    h = super({only: [:id, :user_id, :role, :created_at, :updated_at]}.merge(options || {}))
+    h[:email] = user.email
+    h[:username] = user.name
+    h
+  end
 end
