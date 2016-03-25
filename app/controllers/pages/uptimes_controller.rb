@@ -10,11 +10,11 @@ class Pages::UptimesController < ApplicationController
     @end_date   = Date.parse(params[:end]).end_of_day
 
     if @type == 'point'
-      result = UptimeMetrics.select("mean(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date)
+      result = UptimeMetrics.select("mean(value) as value").by_page(params[:page_id]).where(time: @start_date..@end_date)
     else
       nbDays = (@end_date - @start_date).to_i / 86400
       interval = nbDays <= 1 ? '1h' : '1d'
-      result = UptimeMetrics.select("mean(value) * 100 as value").by_page(params[:page_id]).where(time: @start_date..@end_date).time(interval).fill(:none)
+      result = UptimeMetrics.select("mean(value) as value").by_page(params[:page_id]).where(time: @start_date..@end_date).time(interval).fill(:none)
     end
     render json: result
   end
