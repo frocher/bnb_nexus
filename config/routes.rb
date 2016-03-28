@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     scope module: :pages do
       resources :checks, only: [:index]
       resources :uptimes, only: [:index]
-      resources :members, only: [:index]
+      resources :members, except: :show
     end
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
