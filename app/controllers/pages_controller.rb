@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: pages
+#
+#  id                      :integer          not null, primary key
+#  name                    :string
+#  url                     :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  screenshot_file_name    :string
+#  screenshot_content_type :string
+#  screenshot_file_size    :integer
+#  screenshot_updated_at   :datetime
+#  uptime_keyword          :string
+#  uptime_keyword_type     :string
+#
+
 class PagesController < ApplicationController
   before_action :authenticate_user!, except: [:screenshot]
   before_action :set_page, only: [:show, :update, :destroy]
@@ -34,6 +51,7 @@ class PagesController < ApplicationController
 
         @page.name = params[:name]
         @page.url = params[:url]
+        @page.uptime_keyword_type = "presence"
         @page.save!
 
         member = PageMember.new
@@ -54,6 +72,8 @@ class PagesController < ApplicationController
 
     @page.name = params[:name]
     @page.url = params[:url]
+    @page.uptime_keyword = params[:uptime_keyword]
+    @page.uptime_keyword_type = params[:uptime_keyword_type]
     @page.save!
 
     render json: @page

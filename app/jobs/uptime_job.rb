@@ -13,7 +13,13 @@ class UptimeJob < ActiveJob::Base
       begin
         probes = Rails.application.config.probes
         probe = probes.sample
-        uri = URI.parse("http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}&token=#{probe['token']}")
+        url = "http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}&token=#{probe['token']}"
+        if !page.uptime_keyword.nil? && page.uptime_keyword != ""
+          type = page.uptime_keyword_type
+          type = "presence" if type != "presence" && type != "absence"
+          url += "&keyword=#{page.uptime_keyword}&type=#{type}"
+        end
+        uri = URI.parse(url)
         res = Net::HTTP::get_response(uri)
         result = JSON.parse(res.body)
         last = get_last_value(page)

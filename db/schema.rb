@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151004205536) do
+ActiveRecord::Schema.define(version: 20160328195237) do
 
   create_table "page_members", force: :cascade do |t|
     t.integer  "user_id",                null: false
@@ -34,6 +34,8 @@ ActiveRecord::Schema.define(version: 20151004205536) do
     t.string   "screenshot_content_type"
     t.integer  "screenshot_file_size"
     t.datetime "screenshot_updated_at"
+    t.string   "uptime_keyword"
+    t.string   "uptime_keyword_type"
   end
 
   create_table "performances", force: :cascade do |t|

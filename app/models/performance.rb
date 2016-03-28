@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: performances
+#
+#  id         :integer          not null, primary key
+#  page_id    :integer          not null
+#  har        :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class Performance < ActiveRecord::Base
   belongs_to :page
 

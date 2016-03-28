@@ -11,6 +11,8 @@
 #  screenshot_content_type :string
 #  screenshot_file_size    :integer
 #  screenshot_updated_at   :datetime
+#  uptime_keyword          :string
+#  uptime_keyword_type     :string
 #
 
 require 'test_helper'

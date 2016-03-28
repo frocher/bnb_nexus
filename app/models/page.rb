@@ -11,7 +11,10 @@
 #  screenshot_content_type :string
 #  screenshot_file_size    :integer
 #  screenshot_updated_at   :datetime
+#  uptime_keyword          :string
+#  uptime_keyword_type     :string
 #
+
 class Page < ActiveRecord::Base
   after_create :init_jobs
 
@@ -34,7 +37,7 @@ class Page < ActiveRecord::Base
   do_not_validate_attachment_file_type :screenshot
 
   def as_json(options={})
-    super({only: [:id,:name,:url,:created_at, :updated_at]}.merge(options || {}))
+    super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :created_at, :updated_at]}.merge(options || {}))
   end
 
   def init_jobs
