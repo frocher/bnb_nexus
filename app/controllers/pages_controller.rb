@@ -51,6 +51,7 @@ class PagesController < ApplicationController
 
         @page.name = params[:name]
         @page.url = params[:url]
+        @page.uptime_keyword = ""
         @page.uptime_keyword_type = "presence"
         @page.save!
 
