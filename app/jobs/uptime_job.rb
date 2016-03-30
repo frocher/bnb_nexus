@@ -24,12 +24,12 @@ class UptimeJob < ActiveJob::Base
         result = JSON.parse(res.body)
         last = get_last_value(page)
         if res.code == "200" && result["status"] == "success"
-          UptimeMetrics.write(page_id: page_id, value: 1)
+          UptimeMetrics.write!(page_id: page_id, value: 1)
           send_up_mail(page) if last == 0
           logger.info "Success for #{page.url}"
         else
           error_content = result["content"] || "empty"
-          UptimeMetrics.write(page_id: page_id, value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+          UptimeMetrics.write!(page_id: page_id, value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
           send_down_mail(page) if last == 1
           logger.error "Error #{res.code} for url #{page.url}"
         end
