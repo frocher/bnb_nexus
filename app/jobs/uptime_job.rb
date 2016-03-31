@@ -30,7 +30,7 @@ class UptimeJob < ActiveJob::Base
         else
           error_content = result["content"] || "empty"
           UptimeMetrics.write!(page_id: page_id, value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
-          send_down_mail(page) if last == 1
+          send_down_mail(page, result["errorMessage"]) if last == 1
           logger.error "Error #{res.code} for url #{page.url}"
         end
       rescue Exception => e
@@ -51,11 +51,11 @@ class UptimeJob < ActiveJob::Base
   end
 
   def send_up_mail(page)
-    send_mail(page, "Page up", "The page #{page.url} is up again.")
+    send_mail(page, "Page #{page.url} is up", "The page #{page.url} is up again.")
   end
 
-  def send_down_mail(page)
-    send_mail(page, "Page down", "The page #{page.url} is down.")
+  def send_down_mail(page, error_message)
+    send_mail(page, "Page #{page.url} is down", "The page #{page.url} is down : #{error_message}")
   end
 
   def send_mail(page, title, message)
