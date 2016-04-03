@@ -24,13 +24,15 @@ class Pages::StatsController < ApplicationController
   end
 
   def read_uptime_summary(page, start_date, end_date)
-    UptimeMetrics.select("mean(value) as value").by_page(page.id]).where(time: start_date..end_date)
+    data = UptimeMetrics.select("mean(value) as value").by_page(page.id).where(time: start_date..end_date)
+    data.to_a
   end
 
   def read_uptime_points(page, start_date, end_date)
     nbDays = (end_date - start_date).to_i / 86400
     interval = nbDays <= 1 ? '1h' : '1d'
-    UptimeMetrics.select("mean(value) as value").by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
+    data = UptimeMetrics.select("mean(value) as value").by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
+    data.to_a
   end
 
   def read_performance_summary(page, target, start_date, end_date)
@@ -39,7 +41,8 @@ class Pages::StatsController < ApplicationController
                   "median(page_load_time) as page_load," \
                   "median(response_start) as response_start," \
                   "median(speed_index) as speed_index"
-    PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data = PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data.to_a
   end
 
   def read_performance_points(page, target, start_date, end_date)
@@ -51,7 +54,8 @@ class Pages::StatsController < ApplicationController
 
     nbDays = (end_date - start_date).to_i / 86400
     interval = nbDays <= 1 ? '1h' : '1d'
-    PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data = PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data.to_a
   end
 
   def read_requests_summary(page, target, start_date, end_date)
@@ -61,7 +65,8 @@ class Pages::StatsController < ApplicationController
                   "median(image_requests) as image," \
                   "median(font_requests) as font," \
                   "median(other_requests) as other"
-    AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data.to_a
   end
 
   def read_requests_points(page, target, start_date, end_date)
@@ -73,7 +78,8 @@ class Pages::StatsController < ApplicationController
                   "median(other_requests) as other"
     nbDays = (end_date - start_date).to_i / 86400
     interval = nbDays <= 1 ? '1h' : '1d'
-    AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data.to_a
   end
 
   def read_bytes_summary(page, target, start_date, end_date)
@@ -83,7 +89,8 @@ class Pages::StatsController < ApplicationController
                   "median(image_bytes) as image," \
                   "median(font_bytes) as font," \
                   "median(other_bytes) as other"
-    AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    data.to_a
   end
 
   def read_bytes_points(page, target, start_date, end_date)
@@ -95,7 +102,8 @@ class Pages::StatsController < ApplicationController
                   "median(other_bytes) as other"
     nbDays = (end_date - start_date).to_i / 86400
     interval = nbDays <= 1 ? '1h' : '1d'
-    AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    data.to_a
   end
 
   def get_uptime(page, start_date, end_date)
@@ -157,7 +165,7 @@ class Pages::StatsController < ApplicationController
 
   def get_bytes(page, target, start_date, end_date)
     result = {}
-    data = read_requests_summary(page, target, start_date, end_date)
+    data = read_bytes_summary(page, target, start_date, end_date)
     if data.length > 0
       result["html"]   = data[0]["html"]
       result["css"]    = data[0]["css"]
