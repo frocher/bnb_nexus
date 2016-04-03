@@ -1,35 +1,25 @@
 require 'sparkpost'
 
-class UptimeJob < ActiveJob::Base
+class UptimeJob < BaseJob
   queue_as do
-    # TODO replace with real code
     :uptime
   end
 
   def perform(page_id)
-    logger.info "++++++++ Started UptimeJob ++++++++"
     page = Page.find(page_id)
     unless page.nil?
       begin
-        probes = Rails.application.config.probes
-        probe = probes.sample
-        url = "http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}&token=#{probe['token']}"
-        if !page.uptime_keyword.nil? && page.uptime_keyword != ""
-          type = page.uptime_keyword_type
-          type = "presence" if type != "presence" && type != "absence"
-          url += "&keyword=#{page.uptime_keyword}&type=#{type}"
-        end
-        uri = URI.parse(url)
-        res = Net::HTTP::get_response(uri)
+        probe = choose_probe
+        res = launch_probe(probe, page)
         result = JSON.parse(res.body)
         last = get_last_value(page)
         if res.code == "200" && result["status"] == "success"
-          UptimeMetrics.write!(page_id: page_id, value: 1)
+          UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
           send_up_mail(page) if last == 0
           logger.info "Success for #{page.url}"
         else
           error_content = result["content"] || "empty"
-          UptimeMetrics.write!(page_id: page_id, value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+          UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
           send_down_mail(page, result["errorMessage"]) if last == 1
           logger.error "Error #{res.code} for url #{page.url}"
         end
@@ -39,7 +29,17 @@ class UptimeJob < ActiveJob::Base
       end
       UptimeJob.set(wait: 15.minutes).perform_later(page_id)
     end
-    logger.info "++++++++ Ended UptimeJob ++++++++"
+  end
+
+  def launch_probe(probe, page)
+    url = "http://#{probe['host']}:#{probe['port']}/uptime?url=#{page.url}&token=#{probe['token']}"
+    if !page.uptime_keyword.nil? && page.uptime_keyword != ""
+      type = page.uptime_keyword_type
+      type = "presence" if type != "presence" && type != "absence"
+      url += "&keyword=#{page.uptime_keyword}&type=#{type}"
+    end
+    uri = URI.parse(url)
+    Net::HTTP::get_response(uri)
   end
 
   private
