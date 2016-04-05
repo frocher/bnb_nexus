@@ -107,82 +107,90 @@ class Pages::StatsController < ApplicationController
   end
 
   def get_uptime(page, start_date, end_date)
-    result = {}
+    result = [
+      {"key" => "uptime", "summary" => 0, "values" => []}]
     data = read_uptime_summary(page, start_date, end_date)
     if data.length > 0
-      result["value"]  = data[0]["value"]
-      result["points"] = read_uptime_points(page, start_date, end_date)
-    else
-      result["value"] = 0
-      result["points"] = []
+      result[0]["summary"] = data[0]["value"]
+      result[0]["values"] = read_uptime_points(page, start_date, end_date)
     end
     result
   end
 
   def get_performance(page, target, start_date, end_date)
-    result = {}
+    result = [
+      {"key" => "response_start", "summary" => 0, "values" => []},
+      {"key" => "first_paint", "summary" => 0, "values" => []},
+      {"key" => "speed_index", "summary" => 0, "values" => []},
+      {"key" => "dom_ready", "summary" => 0, "values" => []},
+      {"key" => "page_load", "summary" => 0, "values" => []}]
     data = read_performance_summary(page, target, start_date, end_date)
     if data.length > 0
-      result["response_start"] = data[0]["response_start"]
-      result["first_paint"]    = data[0]["first_paint"]
-      result["speed_index"]    = data[0]["speed_index"]
-      result["dom_ready"]      = data[0]["dom_ready"]
-      result["page_load"]      = data[0]["page_load"]
-      result["points"]         = read_performance_points(page, target, start_date, end_date)
-    else
-      result["response_start"] = 0
-      result["first_paint"]    = 0
-      result["speed_index"]    = 0
-      result["dom_ready"]      = 0
-      result["page_load"]      = 0
-      result["points"]         = []
+      result[0]["summary"] = data[0]["response_start"]
+      result[1]["summary"] = data[0]["first_paint"]
+      result[2]["summary"] = data[0]["speed_index"]
+      result[3]["summary"] = data[0]["dom_ready"]
+      result[4]["summary"] = data[0]["page_load"]
+      points = read_performance_points(page, target, start_date, end_date)
+      points.each do |point|
+        result[0]["values"].push({"time" => point["time"], "value" => point["response_start"]})
+        result[1]["values"].push({"time" => point["time"], "value" => point["first_paint"]})
+        result[2]["values"].push({"time" => point["time"], "value" => point["speed_index"]})
+        result[3]["values"].push({"time" => point["time"], "value" => point["dom_ready"]})
+        result[4]["values"].push({"time" => point["time"], "value" => point["page_load"]})
+      end
     end
     result
   end
 
   def get_requests(page, target, start_date, end_date)
-    result = {}
+    result = create_assets_array
     data = read_requests_summary(page, target, start_date, end_date)
     if data.length > 0
-      result["html"]   = data[0]["html"]
-      result["css"]    = data[0]["css"]
-      result["js"]     = data[0]["js"]
-      result["image"]  = data[0]["image"]
-      result["font"]   = data[0]["font"]
-      result["other"]  = data[0]["other"]
-      result["points"] = read_requests_points(page, target, start_date, end_date)
-    else
-      result["html"]   = 0
-      result["css"]    = 0
-      result["js"]     = 0
-      result["image"]  = 0
-      result["font"]   = 0
-      result["other"]  = 0
-      result["points"] = []
+      init_assets_summary(result, data)
+      points = read_requests_points(page, target, start_date, end_date)
+      init_assets_points(result, points)
     end
     result
   end
 
   def get_bytes(page, target, start_date, end_date)
-    result = {}
+    result = create_assets_array
     data = read_bytes_summary(page, target, start_date, end_date)
     if data.length > 0
-      result["html"]   = data[0]["html"]
-      result["css"]    = data[0]["css"]
-      result["js"]     = data[0]["js"]
-      result["image"]  = data[0]["image"]
-      result["font"]   = data[0]["font"]
-      result["other"]  = data[0]["other"]
-      result["points"] = read_bytes_points(page, target, start_date, end_date)
-    else
-      result["html"]   = 0
-      result["css"]    = 0
-      result["js"]     = 0
-      result["image"]  = 0
-      result["font"]   = 0
-      result["other"]  = 0
-      result["points"] = []
+      init_assets_summary(result, data)
+      points = read_bytes_points(page, target, start_date, end_date)
+      init_assets_points(result, points)
     end
     result
+  end
+
+  def create_assets_array
+    [ {"key" => "html", "summary" => 0, "values" => []},
+      {"key" => "css", "summary" => 0, "values" => []},
+      {"key" => "js", "summary" => 0, "values" => []},
+      {"key" => "image", "summary" => 0, "values" => []},
+      {"key" => "font", "summary" => 0, "values" => []},
+      {"key" => "other", "summary" => 0, "values" => []}]
+  end
+
+  def init_assets_summary(assets, data)
+    assets[0]["summary"] = data[0]["html"]
+    assets[1]["summary"] = data[0]["css"]
+    assets[2]["summary"] = data[0]["js"]
+    assets[3]["summary"] = data[0]["image"]
+    assets[4]["summary"] = data[0]["font"]
+    assets[5]["summary"] = data[0]["other"]
+  end
+
+  def init_assets_points(assets, points)
+    points.each do |point|
+      assets[0]["values"].push({"time" => point["time"], "value" => point["html"]})
+      assets[1]["values"].push({"time" => point["time"], "value" => point["css"]})
+      assets[2]["values"].push({"time" => point["time"], "value" => point["js"]})
+      assets[3]["values"].push({"time" => point["time"], "value" => point["image"]})
+      assets[4]["values"].push({"time" => point["time"], "value" => point["font"]})
+      assets[5]["values"].push({"time" => point["time"], "value" => point["other"]})
+    end
   end
 end
