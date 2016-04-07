@@ -81,7 +81,7 @@ class CheckJob < BaseJob
     return "js" if mime_type.include? "/javascript" or mime_type.include? "/ecmascript"
     return "css" if mime_type.include? "text/css"
     return "image" if mime_type.include? "image/"
-    return "font" if mime_type.include? "font-" or mime_type.include? "ms-font"
+    return "font" if mime_type.include? "font-" or mime_type.include? "ms-font" or mime_type.include? "font/"
     return "other"
   end
 
