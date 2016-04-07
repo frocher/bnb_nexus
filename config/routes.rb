@@ -4,8 +4,6 @@ Rails.application.routes.draw do
   resources :pages do
     scope module: :pages do
       resources :stats, only: [:index]
-      resources :checks, only: [:index]
-      resources :uptimes, only: [:index]
       resources :members, except: :show
     end
   end
