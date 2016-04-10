@@ -2,7 +2,6 @@ class ScreenshotJob < ActiveJob::Base
   queue_as :screenshot
 
   def perform(page_id)
-    logger.info "++++++++ Started ScreenshotJob ++++++++"
     page = Page.find(page_id)
     unless page.nil?
       begin
@@ -30,6 +29,5 @@ class ScreenshotJob < ActiveJob::Base
       end
       ScreenshotJob.set(wait: 1.hour).perform_later(page_id)
     end
-    logger.info "++++++++ Ended ScreenshotJob ++++++++"
   end
 end
