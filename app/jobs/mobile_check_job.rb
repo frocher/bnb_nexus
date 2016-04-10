@@ -4,7 +4,7 @@ class MobileCheckJob < CheckJob
     page = Page.find(page_id)
     unless page.nil?
       check(page, "mobile")
-      MobileCheckJob.set(wait: 1.hour).perform_later(page_id)
+      MobileCheckJob.set(wait: Rails.configuration.x.jobs.check_interval).perform_later(page_id)
     end
   end
 

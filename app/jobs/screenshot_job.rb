@@ -24,7 +24,7 @@ class ScreenshotJob < ActiveJob::Base
         logger.error "Error for #{page.url}"
         logger.error e.to_s
       end
-      ScreenshotJob.set(wait: 1.hour).perform_later(page_id)
+      ScreenshotJob.set(wait: Rails.configuration.x.jobs.screenshot_interval).perform_later(page_id)
     end
   end
 end

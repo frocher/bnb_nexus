@@ -80,6 +80,11 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'www.botnbot.com', port: 80 }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = { address: "mail", port: 25 }
+
+  # Jobs intervals
+  config.x.jobs.check_interval = 2.hours
+  config.x.jobs.uptime_interval = 15.minutes
+  config.x.jobs.screenshot_interval = 4.hours
 end
 
 Sidekiq::Logging.logger.level = Logger::WARN

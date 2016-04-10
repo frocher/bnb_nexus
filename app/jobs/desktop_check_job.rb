@@ -4,7 +4,7 @@ class DesktopCheckJob < CheckJob
     page = Page.find(page_id)
     unless page.nil?
       check(page, "desktop")
-      DesktopCheckJob.set(wait: 1.hour).perform_later(page_id)
+      DesktopCheckJob.set(wait: Rails.configuration.x.jobs.check_interval).perform_later(page_id)
     end
   end
 

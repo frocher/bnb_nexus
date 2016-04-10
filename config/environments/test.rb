@@ -39,4 +39,9 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Jobs intervals
+  config.x.jobs.check_interval = 15.minutes
+  config.x.jobs.uptime_interval = 5.minutes
+  config.x.jobs.screenshot_interval = 30.minutes
 end

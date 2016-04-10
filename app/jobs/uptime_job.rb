@@ -27,7 +27,7 @@ class UptimeJob < BaseJob
         logger.error "Error for #{page.url}"
         logger.error e.to_s
       end
-      UptimeJob.set(wait: 15.minutes).perform_later(page_id)
+      UptimeJob.set(wait: Rails.configuration.x.jobs.uptime_interval).perform_later(page_id)
     end
   end
 
