@@ -13,7 +13,6 @@
 devise_secret_key: <Your long devise secret key>
 secret_token: <Rails 4 needs a secret token>
 
-
 # You can define many Probes with a json formatted string
 # Here is an example with one probe running on localhost
-probes: '[{ "host":"localhost", "port":3333 }]'
+probes: '[{ "name": "mylocalhost", "host":"localhost", "port":3333 }]'
