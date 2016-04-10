@@ -12,7 +12,7 @@ class UptimeJob < BaseJob
         probe = choose_probe
         res = launch_probe(probe, page)
         result = JSON.parse(res.body)
-        last = get_last_value(page)
+        last = page.get_last_uptime
         if res.code == "200" && result["status"] == "success"
           UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
           send_up_mail(page) if last == 0
@@ -43,12 +43,6 @@ class UptimeJob < BaseJob
   end
 
   private
-
-  def get_last_value(page)
-    result = UptimeMetrics.select("last(value) as value").by_page(page.id)
-    records = result.load
-    records.empty? ? -1 : records[0]["value"]
-  end
 
   def send_up_mail(page)
     send_mail(page, "Page #{page.url} is up", "The page #{page.url} is up again.")

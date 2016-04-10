@@ -26,7 +26,6 @@ class Page < ActiveRecord::Base
       medium: '-resize "1024x" +repage -crop "1024x240+0+0" -gravity North'
     }
 
-
   has_many :page_members, dependent: :destroy
 
   #
@@ -37,7 +36,15 @@ class Page < ActiveRecord::Base
   do_not_validate_attachment_file_type :screenshot
 
   def as_json(options={})
-    super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :created_at, :updated_at]}.merge(options || {}))
+    h = super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :created_at, :updated_at]}.merge(options || {}))
+    h[:uptime_status] = get_last_uptime
+    h
+  end
+
+  def get_last_uptime
+    result = UptimeMetrics.select("last(value) as value").by_page(id)
+    records = result.load
+    records.empty? ? -1 : records[0]["value"]
   end
 
   def init_jobs
