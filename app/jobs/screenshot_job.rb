@@ -11,9 +11,6 @@ class ScreenshotJob < ActiveJob::Base
         stdout,stderr,status = Open3.capture3(cmd)
         if status.success?
           output_file = File.new output_path
-
-          logger.info "Output path : " + output_path.to_s
-
           page.screenshot = output_file
           page.save!
           output_file.close
