@@ -17,9 +17,9 @@ class CheckJob < BaseJob
       else
         logger.error "Error #{res.code} for url #{page.url}"
       end
-    rescue Influxer::MetricsError => error
+    rescue Exception => e
       logger.error "Error for #{page.url}"
-      logger.error error.to_s
+      logger.error e.to_s
     end
   end
 
