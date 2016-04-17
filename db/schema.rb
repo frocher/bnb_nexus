@@ -38,15 +38,6 @@ ActiveRecord::Schema.define(version: 20160328195237) do
     t.string   "uptime_keyword_type"
   end
 
-  create_table "performances", force: :cascade do |t|
-    t.integer  "page_id",    null: false
-    t.string   "har",        null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "performances", ["page_id"], name: "index_performances_on_page_id"
-
   create_table "users", force: :cascade do |t|
     t.string   "provider",                               null: false
     t.string   "uid",                    default: "",    null: false
