@@ -36,7 +36,8 @@ class UptimeJob < BaseJob
     if !page.uptime_keyword.nil? && page.uptime_keyword != ""
       type = page.uptime_keyword_type
       type = "presence" if type != "presence" && type != "absence"
-      url += "&keyword=#{page.uptime_keyword}&type=#{type}"
+      keyword = CGI::escape(page.uptime_keyword)
+      url += "&keyword=#{keyword}&type=#{type}"
     end
     uri = URI.parse(url)
     Net::HTTP::get_response(uri)
