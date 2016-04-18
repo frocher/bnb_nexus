@@ -4,6 +4,11 @@ class CheckJob < BaseJob
   end
 
   def check(page, target)
+    if page.get_last_uptime == 0
+      logger.info "Check not done because #{page.url} is down"
+      return
+    end
+
     begin
       probe = choose_probe
       res = launch_probe(probe, target, page)
