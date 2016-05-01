@@ -13,6 +13,10 @@
 #  screenshot_updated_at   :datetime
 #  uptime_keyword          :string
 #  uptime_keyword_type     :string
+#  slack_webhook           :string
+#  slack_channel           :string
+#  mail_notify             :boolean          default(TRUE)
+#  slack_notify            :boolean          default(FALSE)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

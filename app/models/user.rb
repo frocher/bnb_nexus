@@ -25,6 +25,8 @@
 #  tokens                 :text
 #  created_at             :datetime
 #  updated_at             :datetime
+#  slack_webhook          :string
+#  slack_channel          :string
 #
 
 class User < ActiveRecord::Base
@@ -43,7 +45,7 @@ class User < ActiveRecord::Base
   # Validations
   #
   validates :name, presence: true, uniqueness: true
-  validates :bio, length: { maximum: 500 }, allow_blank: true         
+  validates :bio, length: { maximum: 500 }, allow_blank: true
 
   def is_admin?
     admin
@@ -53,7 +55,7 @@ class User < ActiveRecord::Base
   def avatar_url
     ApplicationController.helpers.avatar_icon(email)
   end
-  
+
   private
 
   # First user is always super admin

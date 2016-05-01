@@ -5,6 +5,7 @@ class Ability
 
       case subject.class.name
       when "Page" then page_abilities(user, subject)
+      when "User" then user_abilities(user, subject)
       else []
       end.concat(global_abilities(user))
     end
@@ -32,7 +33,17 @@ class Ability
 
       elsif members.guests.include?(member)
         rules << page_guest_rules
+      end
 
+      rules.flatten
+    end
+
+    def user_abilities(user, subject)
+      rules = []
+
+      # An user can only show and update itself
+      if user.id == subject.id
+        rules << [:show_user, :update_user]
       end
 
       rules.flatten

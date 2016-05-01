@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160328195237) do
+ActiveRecord::Schema.define(version: 20160424195516) do
 
   create_table "page_members", force: :cascade do |t|
     t.integer  "user_id",                null: false
@@ -28,15 +28,28 @@ ActiveRecord::Schema.define(version: 20160328195237) do
   create_table "pages", force: :cascade do |t|
     t.string   "name"
     t.string   "url"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.string   "screenshot_file_name"
     t.string   "screenshot_content_type"
     t.integer  "screenshot_file_size"
     t.datetime "screenshot_updated_at"
     t.string   "uptime_keyword"
     t.string   "uptime_keyword_type"
+    t.string   "slack_webhook"
+    t.string   "slack_channel"
+    t.boolean  "mail_notify",             default: true
+    t.boolean  "slack_notify",            default: false
   end
+
+  create_table "performances", force: :cascade do |t|
+    t.integer  "page_id",    null: false
+    t.string   "har",        null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "performances", ["page_id"], name: "index_performances_on_page_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "provider",                               null: false
@@ -61,6 +74,8 @@ ActiveRecord::Schema.define(version: 20160328195237) do
     t.text     "tokens"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "slack_webhook"
+    t.string   "slack_channel"
   end
 
   add_index "users", ["email"], name: "index_users_on_email"

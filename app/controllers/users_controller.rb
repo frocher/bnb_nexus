@@ -25,14 +25,37 @@
 #  tokens                 :text
 #  created_at             :datetime
 #  updated_at             :datetime
-#  slack_webhook          :string
-#  slack_channel          :string
 #
 
-require 'test_helper'
+class UsersController < ApplicationController
+  before_action :set_user
 
-class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  def show
+    return not_found! unless can?(current_user, :show_user, @user)
+    render json: @user
+  end
+
+  def update
+    return not_found! unless can?(current_user, :update_user, @user)
+
+    @user.name = params[:name]
+    @user.bio  = params[:bio]
+    @user.save!
+
+    render json: @user
+
+  rescue ActiveRecord::RecordInvalid
+    render json: {errors: @user.errors}, status: 422
+  end
+
+  private
+
+  def set_user
+    if params[:id].to_i <= 0
+      @user = current_user
+    else
+      @user = User.find(params[:id])
+    end
+  end
+
 end

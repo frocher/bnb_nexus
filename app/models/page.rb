@@ -13,6 +13,10 @@
 #  screenshot_updated_at   :datetime
 #  uptime_keyword          :string
 #  uptime_keyword_type     :string
+#  slack_webhook           :string
+#  slack_channel           :string
+#  mail_notify             :boolean          default(TRUE)
+#  slack_notify            :boolean          default(FALSE)
 #
 
 class Page < ActiveRecord::Base
@@ -34,17 +38,25 @@ class Page < ActiveRecord::Base
   validates :name, presence: true
   validates :url, url: true
   do_not_validate_attachment_file_type :screenshot
+  validates :slack_webhook, url: true, if: Proc.new { |a| a.slack_notify? }
+  validates :slack_channel, presence: true, if: Proc.new { |a| a.slack_notify? }
 
   def as_json(options={})
-    h = super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :created_at, :updated_at]}.merge(options || {}))
-    h[:uptime_status] = get_last_uptime
+    h = super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :slack_webhook, :slack_channel, :created_at, :updated_at]}.merge(options || {}))
+    h[:uptime_status] = last_uptime
     h
   end
 
-  def get_last_uptime
+  def last_uptime
     result = UptimeMetrics.select("last(value) as value").by_page(id)
     records = result.load
     records.empty? ? -1 : records[0]["value"]
+  end
+
+  def last_measure
+    result = UptimeMetrics.select("value").by_page(id)
+    records = result.load
+    records.empty? ? nil : DateTime.parse(records.last["time"]).to_time
   end
 
   def init_jobs

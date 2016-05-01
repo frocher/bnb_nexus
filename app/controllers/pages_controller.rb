@@ -13,6 +13,10 @@
 #  screenshot_updated_at   :datetime
 #  uptime_keyword          :string
 #  uptime_keyword_type     :string
+#  slack_webhook           :string
+#  slack_channel           :string
+#  mail_notify             :boolean          default(TRUE)
+#  slack_notify            :boolean          default(FALSE)
 #
 
 class PagesController < ApplicationController
@@ -53,6 +57,10 @@ class PagesController < ApplicationController
         @page.url = params[:url]
         @page.uptime_keyword = ""
         @page.uptime_keyword_type = "presence"
+        @page.mail_notify = true
+        @page.slack_notify = false
+        @page.slack_webhook = ""
+        @page.slack_channel = ""
         @page.save!
 
         member = PageMember.new
@@ -75,6 +83,10 @@ class PagesController < ApplicationController
     @page.url = params[:url]
     @page.uptime_keyword = params[:uptime_keyword]
     @page.uptime_keyword_type = params[:uptime_keyword_type]
+    @page.mail_notify = params[:mail_notify] || true
+    @page.slack_notify = params[:slack_notify] || false
+    @page.slack_webhook = params[:slack_webhook] || ""
+    @page.slack_channel = params[:slack_channel] || ""
     @page.save!
 
     render json: @page

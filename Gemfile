@@ -19,8 +19,12 @@ gem 'kaminari'
 # Files attachments
 gem 'paperclip'
 
-# Mail
+# Notifications (mail, slack)
 gem 'sparkpost'
+gem 'slack-notifier'
+
+# Time manipulation
+gem 'chronic_duration'
 
 # Auth
 gem 'devise_token_auth', '>= 0.1.32.beta9'
