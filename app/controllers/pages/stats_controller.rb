@@ -30,7 +30,7 @@ class Pages::StatsController < ApplicationController
 
   def read_uptime_points(page, start_date, end_date)
     nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays <= 1 ? '1h' : '1d'
+    interval = nbDays < 7 ? '1h' : '1d'
     data = UptimeMetrics.select("mean(value) as value").by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
@@ -53,7 +53,7 @@ class Pages::StatsController < ApplicationController
                   "mean(speed_index) as speed_index"
 
     nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays <= 1 ? '1h' : '1d'
+    interval = nbDays < 7 ? '1h' : '1d'
     data = PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
@@ -77,7 +77,7 @@ class Pages::StatsController < ApplicationController
                   "median(font_requests) as font," \
                   "median(other_requests) as other"
     nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays <= 1 ? '1h' : '1d'
+    interval = nbDays < 7 ? '1h' : '1d'
     data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
@@ -101,7 +101,7 @@ class Pages::StatsController < ApplicationController
                   "median(font_bytes) as font," \
                   "median(other_bytes) as other"
     nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays <= 1 ? '1h' : '1d'
+    interval = nbDays < 7 ? '1h' : '1d'
     data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
