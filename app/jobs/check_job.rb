@@ -4,7 +4,7 @@ class CheckJob < BaseJob
   end
 
   def check(page, target)
-    if page.last_uptime == 0
+    if page.last_uptime_value == 0
       logger.info "Check not done because #{page.url} is down"
       return
     end

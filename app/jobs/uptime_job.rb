@@ -13,11 +13,11 @@ class UptimeJob < BaseJob
         probe = choose_probe
         res = launch_probe(probe, page)
         result = JSON.parse(res.body)
-        last = page.last_uptime
+        last = page.last_uptime_value
         if res.code == "200" && result["status"] == "success"
-          last_measure = page.last_measure
+          last_up = page.last_up_time
           UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
-          send_up_notification(page, last_measure) if last == 0
+          send_up_notification(page, last_up) if last == 0
           logger.info "Success for #{page.url}"
         else
           error_content = result["content"] || "empty"
@@ -47,8 +47,8 @@ class UptimeJob < BaseJob
 
   private
 
-  def send_up_notification(page, last_measure)
-    interval = Time.now.round(0) - last_measure.round(0)
+  def send_up_notification(page, last_up)
+    interval = Time.now.round(0) - last_up.round(0)
     duration = ChronicDuration.output(interval, :format => :long)
     message = "The page #{page.url} is up again after a downtime of #{duration}."
     if page.mail_notify

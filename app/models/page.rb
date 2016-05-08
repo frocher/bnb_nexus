@@ -43,20 +43,24 @@ class Page < ActiveRecord::Base
 
   def as_json(options={})
     h = super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :slack_webhook, :slack_channel, :created_at, :updated_at]}.merge(options || {}))
-    h[:uptime_status] = last_uptime
+    h[:uptime_status] = last_uptime_value
     h
   end
 
-  def last_uptime
+  def last_uptime_value
     result = UptimeMetrics.select("last(value) as value").by_page(id)
     records = result.load
     records.empty? ? -1 : records[0]["value"]
   end
 
-  def last_measure
+  def last_up_time
     result = UptimeMetrics.select("value").by_page(id)
     records = result.load
-    records.empty? ? nil : DateTime.parse(records.last["time"]).to_time
+    return nil if records.empty?
+
+    records.reverse_each do |record|
+      return DateTime.parse(record["time"]).to_time if record["value"] == 1
+    end
   end
 
   def init_jobs
