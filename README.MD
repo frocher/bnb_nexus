@@ -51,6 +51,7 @@ the BotnBot Nexus uses the following environment variables :
 * probes : array of probes defined as a json string.
 * devise_secret_key : you must generate a devise key.
 * secret_token : rails 4 needs a secret token.
+* google_analytics_key : if you want to track usage statistics
 
 This software uses the Figaro gem. you can define this variables using an application.yml file or using environment variables.
 An application.yml.sample file is included in the config directory.
