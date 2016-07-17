@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.2.5'
+gem 'rails', '4.2.5.1'
 
 gem 'rails-api'
 gem 'jbuilder'
@@ -22,6 +22,7 @@ gem 'paperclip'
 # Notifications (mail, slack)
 gem 'sparkpost'
 gem 'slack-notifier'
+gem 'slim'
 
 # Time manipulation
 gem 'chronic_duration'
