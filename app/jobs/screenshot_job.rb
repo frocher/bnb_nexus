@@ -2,8 +2,8 @@ class ScreenshotJob < ActiveJob::Base
   queue_as :screenshot
 
   def perform(page_id)
-    page = Page.find(page_id)
-    unless page.nil?
+    if Page.exists?(page_id)
+      page = Page.find(page_id)
       begin
         output_path = File.join(Rails.root, 'screenshots', page.id.to_s, 'original', page.id.to_s + '.png')
         file = File.join(Rails.root, 'app', 'phantom', 'screenshot.js')

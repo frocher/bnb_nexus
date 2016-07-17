@@ -7,8 +7,8 @@ class UptimeJob < BaseJob
   end
 
   def perform(page_id)
-    page = Page.find(page_id)
-    unless page.nil?
+    if Page.exists?(page_id)
+      page = Page.find(page_id)
       begin
         probe = choose_probe
         res = launch_probe(probe, page)
