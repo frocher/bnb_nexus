@@ -39,6 +39,7 @@ gem 'figaro'
 
 # Cron jobs
 gem 'sidekiq'
+gem 'sidekiq-limit_fetch'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

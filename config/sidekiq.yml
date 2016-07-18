@@ -1,6 +1,10 @@
-:concurrency: 1
+:concurrency: 3
 :pidfile: tmp/pids/sidekiq.pid
 :queues:
   - uptime
   - check
   - screenshot
+:limits:
+  uptime: 1
+  check: 1
+  screenshot: 1
