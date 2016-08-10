@@ -23,21 +23,23 @@ class WeeklyReportJob < BaseJob
   end
 
   def process_user(user)
-    file_path = Rails.root.join("app", "views", "mail.slim")
     logger.info "Processing user : " + user.email
 
     pages = user.pages.sort_by { |p| p["name"] }
-    @context = OpenStruct.new
-    @context.pages = []
-    @context.period_start = (Date.today - 7).at_beginning_of_week.beginning_of_day
-    @context.period_end = (Date.today - 7).at_end_of_week.end_of_day
+    unless pages.empty?
+      @context = OpenStruct.new
+      @context.pages = []
+      @context.period_start = (Date.today - 7).at_beginning_of_week.beginning_of_day
+      @context.period_end = (Date.today - 7).at_end_of_week.end_of_day
 
-    pages.each do |page|
-      @context.pages << construct_page(page, @context.period_start, @context.period_end)
+      pages.each do |page|
+        @context.pages << construct_page(page, @context.period_start, @context.period_end)
+      end
+
+      file_path = Rails.root.join("app", "views", "mail.slim")
+      message = Slim::Template.new(file_path).render(self)
+      send_mail(user, generate_title(@context.period_start, @context.period_end), message)
     end
-
-    message = Slim::Template.new(file_path).render(self)
-    send_mail(user, generate_title(@context.period_start, @context.period_end), message)
   rescue Exception => e
     logger.error "Error processing user " + user.email
     logger.error e.to_s
