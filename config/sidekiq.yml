@@ -4,6 +4,7 @@
   - uptime
   - check
   - screenshot
+  - weekly
 :limits:
   uptime: 1
   check: 1

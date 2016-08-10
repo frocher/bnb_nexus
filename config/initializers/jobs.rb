@@ -11,4 +11,5 @@ if Sidekiq.server?
   Page.all.each do |page|
     page.init_jobs
   end
+  WeeklyReportJob.planify_next
 end

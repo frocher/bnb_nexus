@@ -63,6 +63,43 @@ class Page < ActiveRecord::Base
     end
   end
 
+  def uptime_summary(start_date, end_date)
+    data = UptimeMetrics.select("mean(value) as value").by_page(id).where(time: start_date..end_date)
+    data.to_a
+  end
+
+  def performance_summary(target, start_date, end_date)
+    selectValue = "median(dom_ready) as dom_ready," \
+                  "median(first_paint) as first_paint," \
+                  "median(page_load_time) as page_load," \
+                  "median(response_start) as response_start," \
+                  "median(speed_index) as speed_index"
+    data = PerformanceMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+    data.to_a
+  end
+
+  def requests_summary(target, start_date, end_date)
+    selectValue = "median(html_requests) as html," \
+                  "median(js_requests) as js," \
+                  "median(css_requests) as css," \
+                  "median(image_requests) as image," \
+                  "median(font_requests) as font," \
+                  "median(other_requests) as other"
+    data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+    data.to_a
+  end
+
+  def bytes_summary(target, start_date, end_date)
+    selectValue = "median(html_bytes) as html," \
+                  "median(js_bytes) as js," \
+                  "median(css_bytes) as css," \
+                  "median(image_bytes) as image," \
+                  "median(font_bytes) as font," \
+                  "median(other_bytes) as other"
+    data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+    data.to_a
+  end
+
   def init_jobs
     ScreenshotJob.set(wait: rand(1..60).minutes).perform_later(id)
     DesktopCheckJob.set(wait: rand(1..120).minutes).perform_later(id)
