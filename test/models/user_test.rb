@@ -27,6 +27,7 @@
 #  updated_at             :datetime
 #  slack_webhook          :string
 #  slack_channel          :string
+#  image                  :string
 #
 
 require 'test_helper'

@@ -27,6 +27,7 @@
 #  updated_at             :datetime
 #  slack_webhook          :string
 #  slack_channel          :string
+#  image                  :string
 #
 
 class User < ActiveRecord::Base
@@ -34,9 +35,11 @@ class User < ActiveRecord::Base
 
   before_create :record_first_admin
 
+  alias_attribute :nickname, :name
 
   has_many :page_members, dependent: :destroy
   has_many :pages, through: :page_members
+  has_many :identities
 
   # Scopes
   scope :admins, -> { where(admin: true) }
@@ -51,10 +54,29 @@ class User < ActiveRecord::Base
     admin
   end
 
-
   def avatar_url
     ApplicationController.helpers.avatar_icon(email)
   end
+
+
+  #
+  # Class methods
+  #
+  class << self
+    def from_omniauth(auth)
+      user = nil
+      identity = Identity.where(provider: auth.provider, uid: auth.uid).first
+      if identity
+        user = identity.user
+      else
+        user = User.find_by(email: auth.info.email) || User.create(email: auth.info.email, password: Devise.friendly_token[0,20], name: (auth.info.name || auth.info.full_name).to_s)
+        identity = Identity.create(provider: auth.provider, uid: auth.uid, user: user)
+      end
+      user
+    end
+
+  end
+
 
   private
 

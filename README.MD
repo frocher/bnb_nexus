@@ -48,10 +48,17 @@ docker run -p 3000:3000 -d nexus bundle exec foreman start
 
 the BotnBot Nexus uses the following environment variables :
 
-* probes : array of probes defined as a json string.
-* devise_secret_key : you must generate a devise key.
-* secret_token : rails 4 needs a secret token.
-* google_analytics_key : if you want to track usage statistics
+* DEVISE_SECRET_KEY : you must generate a devise key.
+* FACEBOOK_KEY : facebook key for omniauth
+* FACEBOOK_SECRET : facebook secret for omniauth
+* GITHUB_KEY : github key for omniauth
+* GITHUB_SECRET : github secret for omniauth
+* GOOGLE_ANALYTICS_KEY : if you want to track usage statistics
+* GOOGLE_KEY : google key for omniauth
+* GOOGLE_SECRET : google secret for omniauth
+* PROBES : array of probes defined as a json string.
+* SECRET_TOKEN : rails 4 needs a secret token.
+* SPARKPOST_API_KEY : Botnbot currently uses Sparkpost to send alert and report emails.
 
 This software uses the Figaro gem. you can define this variables using an application.yml file or using environment variables.
 An application.yml.sample file is included in the config directory.

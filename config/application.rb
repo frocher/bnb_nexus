@@ -15,5 +15,7 @@ module BnbNexus
 
     # Array of probes for pages checks and measures
     config.probes = JSON.parse(Figaro.env.probes)
+
+    config.middleware.insert_before ActionDispatch::ParamsParser, "SessionStack"
   end
 end
