@@ -10,4 +10,7 @@ class Users::OmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksCon
     @resource
   end
 
+  def omniauth_failure
+    redirect_to request.env['omniauth.origin'] + '?message=Access%20denied'
+  end
 end
