@@ -65,7 +65,7 @@ class Page < ActiveRecord::Base
 
   def uptime_summary(start_date, end_date)
     data = UptimeMetrics.select("mean(value) as value").by_page(id).where(time: start_date..end_date)
-    data.to_a
+    convert_influx_result(data)
   end
 
   def performance_summary(target, start_date, end_date)
@@ -75,7 +75,7 @@ class Page < ActiveRecord::Base
                   "median(response_start) as response_start," \
                   "median(speed_index) as speed_index"
     data = PerformanceMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
-    data.to_a
+    convert_influx_result(data)
   end
 
   def requests_summary(target, start_date, end_date)
@@ -86,7 +86,7 @@ class Page < ActiveRecord::Base
                   "median(font_requests) as font," \
                   "median(other_requests) as other"
     data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
-    data.to_a
+    convert_influx_result(data)
   end
 
   def bytes_summary(target, start_date, end_date)
@@ -97,7 +97,7 @@ class Page < ActiveRecord::Base
                   "median(font_bytes) as font," \
                   "median(other_bytes) as other"
     data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
-    data.to_a
+    convert_influx_result(data)
   end
 
   def init_jobs
@@ -107,4 +107,10 @@ class Page < ActiveRecord::Base
     UptimeJob.set(wait: rand(1..60).minutes).perform_later(id)
   end
 
+  private
+
+  def convert_influx_result(records)
+    array = records.to_a
+    array.empty? ? nil : array[0]
+  end
 end
