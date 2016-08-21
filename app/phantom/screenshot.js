@@ -34,6 +34,15 @@ if (system.args.length < 3 || system.args.length > 5) {
     if (system.args.length > 4) {
         page.zoomFactor = system.args[4];
     }
+
+    page.settings.resourceTimeout = 5000;
+    page.onResourceTimeout = function(e) {
+        console.log(e.errorCode); 
+        console.log(e.errorString);
+        console.log(e.url);
+        phantom.exit(1);
+    };
+
     page.open(address, function (status) {
         if (status !== 'success') {
             console.log('Unable to load the address : ' + status);
@@ -42,7 +51,7 @@ if (system.args.length < 3 || system.args.length > 5) {
             window.setTimeout(function () {
                 page.render(output);
                 phantom.exit();
-            }, 200);
+            }, 1000);
         }
     });
 }
