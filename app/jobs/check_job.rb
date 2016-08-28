@@ -83,10 +83,13 @@ class CheckJob < BaseJob
 
   def find_mime_type(mime_type)
     return "html" if mime_type.include? "text/html"
-    return "js" if mime_type.include? "/javascript" or mime_type.include? "/ecmascript"
+    return "js" if mime_type.include? "javascript" or mime_type.include? "/ecmascript"
     return "css" if mime_type.include? "text/css"
     return "image" if mime_type.include? "image/"
     return "font" if mime_type.include? "font-" or mime_type.include? "ms-font" or mime_type.include? "font/"
+
+    logger.debug "Other mime type : " + mime_type.to_s
+
     return "other"
   end
 
