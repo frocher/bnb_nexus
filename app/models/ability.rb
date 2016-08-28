@@ -53,7 +53,8 @@ class Ability
     def page_guest_rules
       [
         :read_page,
-        :read_page_member
+        :read_page_member,
+        :leave_page
       ]
     end
 

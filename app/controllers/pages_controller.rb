@@ -96,7 +96,7 @@ class PagesController < ApplicationController
   end
 
   def destroy
-    return not_found! unless can?(current_user, :update_page, @page)
+    return not_found! unless can?(current_user, :delete_page, @page)
     @page.destroy
     render json: @page
   end

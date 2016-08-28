@@ -68,11 +68,18 @@ class Pages::MembersController < ApplicationController
 
   def destroy
     @page = Page.find(params[:page_id])
-    return not_found! unless can?(current_user, :delete_page_member, @page)
-    @member = PageMember.find(params[:id])
+    # If member id is <= 0, use the current user as a member
+    if params[:id].to_i <= 0
+      @member = @page.page_members.find_by_user_id(current_user.id)
+    else
+      @member = PageMember.find(params[:id])
+    end
 
-    # A user can't remove himself
-    return render_api_error!("You can't remove yourself", 422) if @member.user.id == current_user.id
+    if @member.user.id == current_user.id
+      return not_found! unless can?(current_user, :leave_page, @page)
+    else
+      return not_found! unless can?(current_user, :delete_page_member, @page)
+    end
 
     # A user can always remove himself as a page member except if he is the last
     # admin member
