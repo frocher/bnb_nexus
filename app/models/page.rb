@@ -1,3 +1,5 @@
+require 'chronic_duration'
+
 # == Schema Information
 #
 # Table name: pages
@@ -53,13 +55,35 @@ class Page < ActiveRecord::Base
     records.empty? ? -1 : records[0]["value"]
   end
 
-  def last_up_time
+  def last_downtime_duration
     result = UptimeMetrics.select("value").by_page(id)
     records = result.load
-    return nil if records.empty?
+    return 0 if records.empty?
 
+    found_down = nil
+    found_up = nil
+    last_down = 0
+    last_up = 0
     records.reverse_each do |record|
-      return DateTime.parse(record["time"]).to_time if record["value"] == 1
+      if record["value"] == 1
+        last_up = DateTime.parse(record["time"]).to_time
+
+        # If we have a up and we previously found a down, we can now compute the duration
+        unless found_down.nil?
+          # Never had a up, so the page is currently down. We use time now for compute
+          if found_up.nil?
+            found_up = Time.now
+          end
+          interval = found_up.round(0) - last_down.round(0)
+          return ChronicDuration.output(interval, :format => :long)
+        end
+      else
+        last_down = DateTime.parse(record["time"]).to_time
+        if found_down.nil?
+          found_up = last_up
+          found_down = last_down
+        end
+      end
     end
   end
 
