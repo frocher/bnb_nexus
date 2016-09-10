@@ -60,7 +60,7 @@ class CheckJob < BaseJob
 
     resources.each do |resource|
       content = resource["response"]["content"]
-      mime_type = find_mime_type(content["mimeType"])
+      mime_type = find_mime_type(resource["request"]["url"], content["mimeType"])
       data[mime_type + "_requests"] += 1
       data[mime_type + "_bytes"]    += content["size"]
     end
@@ -81,15 +81,15 @@ class CheckJob < BaseJob
     metric.write!
   end
 
-  def find_mime_type(mime_type)
-    return "html" if mime_type.include? "text/html"
-    return "js" if mime_type.include? "javascript" or mime_type.include? "/ecmascript"
-    return "css" if mime_type.include? "text/css"
-    return "image" if mime_type.include? "image/"
-    return "font" if mime_type.include? "font-" or mime_type.include? "ms-font" or mime_type.include? "font/"
+  def find_mime_type(url, mime_type)
+    return "html" if mime_type.include?("text/html")
+    return "js" if mime_type.include?("javascript") or mime_type.include? "/ecmascript"
+    return "css" if mime_type.include?("text/css")
+    return "image" if mime_type.include?("image/")
+    return "font" if mime_type.include?("font-") or mime_type.include?("ms-font") or mime_type.include?("font/")
+    return "font" if url.ends_with?(".woff") or url.ends_with?(".woff2")
 
-    logger.debug "Other mime type : " + mime_type.to_s
-
+    logger.debug "Other mime type : #{mime_type} for url #{url}"
     return "other"
   end
 
