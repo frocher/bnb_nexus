@@ -83,7 +83,8 @@ Rails.application.configure do
 
   # Jobs intervals
   config.x.jobs.check_interval = 2.hours
-  config.x.jobs.uptime_interval = 15.minutes
+  config.x.jobs.uptime_interval = 10.minutes
+  config.x.jobs.second_chanche_interval = 30.seconds
   config.x.jobs.screenshot_interval = 4.hours
 end
 

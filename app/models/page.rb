@@ -128,7 +128,7 @@ class Page < ActiveRecord::Base
     ScreenshotJob.set(wait: rand(1..60).minutes).perform_later(id)
     DesktopCheckJob.set(wait: rand(1..120).minutes).perform_later(id)
     MobileCheckJob.set(wait: rand(1..120).minutes).perform_later(id)
-    UptimeJob.set(wait: rand(1..60).minutes).perform_later(id)
+    UptimeJob.set(wait: rand(1..60).minutes).perform_later(id, false)
   end
 
   private

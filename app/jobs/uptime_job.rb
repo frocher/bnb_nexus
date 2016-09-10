@@ -5,9 +5,11 @@ class UptimeJob < BaseJob
     :uptime
   end
 
-  def perform(page_id)
+  def perform(page_id, is_second_chance)
     if Page.exists?(page_id)
       page = Page.find(page_id)
+      interval = Rails.configuration.x.jobs.uptime_interval
+      second_chance = false
       begin
         probe = choose_probe
         res = launch_probe(probe, page)
@@ -19,15 +21,20 @@ class UptimeJob < BaseJob
           logger.info "Success for #{page.url}"
         else
           error_content = result["content"] || "empty"
-          UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
-          send_down_notification(page, result["errorMessage"]) if last == 1
-          logger.error "Error #{res.code} for url #{page.url}"
+          if is_second_chance
+            UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+            send_down_notification(page, result["errorMessage"]) if last == 1
+          else
+            second_chance = true
+            interval = Rails.configuration.x.jobs.second_chanche_interval
+          end
+          logger.error "Error #{res.code} for url #{page.url}, second changce is #{is_second_chance}"
         end
       rescue Exception => e
-        logger.error "Error for #{page.url}"
+        logger.error "Bot error for #{page.url}"
         logger.error e.to_s
       end
-      UptimeJob.set(wait: Rails.configuration.x.jobs.uptime_interval).perform_later(page_id)
+      UptimeJob.set(wait: interval).perform_later(page_id, second_chance)
     end
   end
 
