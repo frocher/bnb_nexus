@@ -30,6 +30,16 @@ class CheckJob < BaseJob
 
   def launch_probe(probe, target, page)
     uri = URI.parse("http://#{probe['host']}:#{probe['port']}/check?url=#{page.url}&target=#{target}&token=#{probe['token']}")
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = Net::HTTP.start(uri.host, uri.port) {|http|
+      http.read_timeout = 120
+      http.request(request)
+    }
+    response
+  end
+
+  def launch_probe1(probe, target, page)
+    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/check?url=#{page.url}&target=#{target}&token=#{probe['token']}")
     Net::HTTP::get_response(uri)
   end
 
