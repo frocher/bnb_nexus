@@ -14,7 +14,7 @@ class CheckJob < BaseJob
       res = launch_probe(probe, target, page)
       if res.is_a?(Net::HTTPSuccess)
         result = JSON.parse(res.body)
-        stats = result["stats"]["default"]["statistics"]
+        stats = result["stats"]
         write_perfomance_metrics(probe, target, page, stats)
         resources = result["har"]["log"]["entries"]
         write_assets_metrics(probe, target, page, resources)
@@ -45,11 +45,11 @@ class CheckJob < BaseJob
 
   def write_perfomance_metrics(probe, target, page, stats)
     metric = PerformanceMetrics.new page_id: page.id, target: target, probe: probe["name"]
-    metric.response_start = stats["responseStart"]["median"].to_i
-    metric.first_paint    = stats["firstPaint"]["median"].to_i
-    metric.speed_index    = stats["speedIndex"]["median"].to_i
-    metric.dom_ready      = stats["domInteractive"]["median"].to_i
-    metric.page_load_time = stats["pageLoadTime"]["median"].to_i
+    metric.response_start = stats["responseStart"].to_i
+    metric.first_paint    = stats["firstPaint"].to_i
+    metric.speed_index    = stats["speedIndex"].to_i
+    metric.dom_ready      = stats["domInteractive"].to_i
+    metric.page_load_time = stats["pageLoadTime"].to_i
     metric.write!
   end
 
