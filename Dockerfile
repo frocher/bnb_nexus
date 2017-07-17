@@ -27,7 +27,12 @@ ENV APP_HOME /myapp
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-COPY . $APP_HOME
-
-RUN bundle install --without development test
+# Gems
+COPY Gemfile Gemfile
+COPY Gemfile.lock Gemfile.lock
+RUN gem install bundler
+RUN bundle install --without test
 RUN rbenv rehash
+
+# All app
+COPY . $APP_HOME
