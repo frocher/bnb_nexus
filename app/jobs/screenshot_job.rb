@@ -1,3 +1,5 @@
+require 'open3'
+
 class ScreenshotJob < ActiveJob::Base
   queue_as :screenshot
 
