@@ -1,12 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.2.7.1'
-gem 'rake', '~> 11.2.2'
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
 
-gem 'rails-api'
-gem 'jbuilder'
+gem 'rails', '~> 5.1.2'
 
-# Databse access
+# Database access
 gem 'sqlite3'
 gem 'mysql2'
 gem 'influxer'
@@ -42,15 +43,22 @@ gem 'figaro'
 gem 'sidekiq'
 gem 'sidekiq-limit_fetch'
 
+# launch
+gem 'foreman'
+
+# Use Puma as the app server
+gem 'puma', '~> 3.7'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+end
 
-  # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 2.0'
-
+group :development do
+  gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem 'spring-watcher-listen', '~> 2.0.0'
 
   gem 'annotate'
 
@@ -58,12 +66,5 @@ group :development, :test do
   gem 'sinatra', :require => nil
 end
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use puma as the app server
-gem 'foreman'
-gem 'puma'
-
-# To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
