@@ -8,7 +8,6 @@ end
 gem 'rails', '~> 5.1.2'
 
 # Database access
-gem 'sqlite3'
 gem 'mysql2'
 gem 'influxer'
 
@@ -30,7 +29,7 @@ gem 'slim'
 gem 'chronic_duration'
 
 # Auth
-gem 'devise_token_auth', '>= 0.1.32.beta9'
+gem 'devise_token_auth', '>= 0.1.42'
 gem 'omniauth-github'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
