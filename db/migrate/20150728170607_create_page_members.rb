@@ -1,4 +1,4 @@
-class CreatePageMembers < ActiveRecord::Migration
+class CreatePageMembers < ActiveRecord::Migration[5.1]
   def change
     create_table :page_members do |t|
       t.integer  :user_id, null: false
