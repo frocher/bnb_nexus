@@ -1,12 +1,14 @@
+default: &default
+  host: <%= ENV.fetch("INFLUX_HOST") { "localhost" } %>
+  database: <%= ENV.fetch("INFLUX_NAME") { "botnbot" } %>
+  username: <%= ENV.fetch("INFLUX_USERNAME") { "root" } %>
+  password: <%= ENV.fetch("INFLUX_PASSWORD") { "" } %>
+
 development:
-  database: 'botnbot'
-  username: root
-  password: root
+  <<: *default
+
 production:
-  database: 'botnbot'
-  username: root
-  password: root
+  <<: *default
+
 test:
-  database: 'botnbot'
-  username: root
-  password: root
+  <<: *default
