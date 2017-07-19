@@ -39,8 +39,7 @@ gem 'six'
 gem 'figaro'
 
 # Cron jobs
-gem 'sidekiq'
-gem 'sidekiq-limit_fetch'
+gem 'rufus-scheduler'
 
 # launch
 gem 'foreman'
@@ -60,9 +59,6 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 
   gem 'annotate'
-
-  # for sidekiq ui
-  gem 'sinatra', :require => nil
 end
 
 gem 'tzinfo-data'

@@ -2,16 +2,12 @@ require 'sparkpost'
 require 'ostruct'
 
 
-class WeeklyReportJob < BaseJob
+class WeeklyReportJob
   include ActionView::Helpers::NumberHelper
 
-  queue_as do
-    :weekly
-  end
-
-  def self.planify_next
-    next_time = (Date.today + 7).at_beginning_of_week.beginning_of_day
-    WeeklyReportJob.set(wait_until: next_time).perform_later
+  def call(job, time)
+    Rails.logger.info "Starting job #{self.class.name}"
+    perform
   end
 
   def perform
@@ -19,11 +15,10 @@ class WeeklyReportJob < BaseJob
     users.each do |user|
       process_user(user)
     end
-    WeeklyReportJob.planify_next
   end
 
   def process_user(user)
-    logger.info "Processing user : " + user.email
+    Rails.logger.info "Processing user : " + user.email
 
     pages = user.pages.sort_by { |p| p["name"] }
     unless pages.empty?
@@ -41,8 +36,8 @@ class WeeklyReportJob < BaseJob
       send_mail(user, generate_title(@context.period_start, @context.period_end), message)
     end
   rescue Exception => e
-    logger.error "Error processing user " + user.email
-    logger.error e.to_s
+    Rails.logger.error "Error processing user " + user.email
+    Rails.logger.error e.to_s
   end
 
   def generate_title(start_date, end_date)
@@ -53,12 +48,12 @@ class WeeklyReportJob < BaseJob
     sp = SparkPost::Client.new()
     sp.transmission.send_message(user.email, 'jeeves.thebot@botnbot.com', title, message)
   rescue Exception => e
-    logger.error "Error sending mail to user " + user.email
-    logger.error e.to_s
+    Rails.logger.error "Error sending mail to user " + user.email
+    Rails.logger.error e.to_s
   end
 
   def construct_page(page, start_date, end_date)
-    logger.info "Processing page : " + page.name
+    Rails.logger.info "Processing page : " + page.name
 
     stats = OpenStruct.new
     stats.name = page.name
@@ -88,7 +83,7 @@ class WeeklyReportJob < BaseJob
     previous_end = end_date - 1.week.to_i
 
     previous_perf = page.performance_summary("desktop", previous_start, previous_end)
-    
+
     stats.last_speed_index = extract_value(previous_perf, "speed_index", 0)
     stats.speed_index_delta = compute_delta(stats.speed_index, stats.last_speed_index)
 
@@ -182,7 +177,7 @@ class WeeklyReportJob < BaseJob
         array[column]
       else
         array[column].send(operator, operand)
-      end      
+      end
     end
   end
 end

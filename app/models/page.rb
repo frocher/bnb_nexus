@@ -125,10 +125,11 @@ class Page < ActiveRecord::Base
   end
 
   def init_jobs
-    ScreenshotJob.set(wait: rand(1..60).minutes).perform_later(id)
-    DesktopCheckJob.set(wait: rand(1..120).minutes).perform_later(id)
-    MobileCheckJob.set(wait: rand(1..120).minutes).perform_later(id)
-    UptimeJob.set(wait: rand(1..60).minutes).perform_later(id, false)
+    scheduler = Rufus::Scheduler.singleton
+    scheduler.in("#{rand(1..60)}m", ScreenshotJob.new, {:page_id => id})
+    scheduler.in("#{rand(1..120)}m", DesktopCheckJob.new, {:page_id => id})
+    scheduler.in("#{rand(1..120)}m", MobileCheckJob.new, {:page_id => id})
+    scheduler.in("#{rand(1..60)}m", UptimeJob.new, {:page_id => id})
   end
 
   private

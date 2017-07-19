@@ -41,8 +41,8 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   # Jobs intervals
-  config.x.jobs.check_interval = 15.minutes
-  config.x.jobs.uptime_interval = 2.minutes
-  config.x.jobs.second_chanche_interval = 15.seconds
-  config.x.jobs.screenshot_interval = 30.minutes
+  config.x.jobs.check_interval = "15m"
+  config.x.jobs.uptime_interval = "2m"
+  config.x.jobs.second_chanche_interval = "15s"
+  config.x.jobs.screenshot_interval = "30m"
 end

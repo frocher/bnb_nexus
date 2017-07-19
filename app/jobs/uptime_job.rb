@@ -1,15 +1,19 @@
 require 'sparkpost'
 
 class UptimeJob < BaseJob
-  queue_as do
-    :uptime
+  def call(job, time)
+    page_id = job.opts[:page_id]
+    Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
+    second_chance = perform(page_id, job.opts[:is_second_chance] || false)
+    interval = second_chance ? Rails.configuration.x.jobs.second_chanche_interval : Rails.configuration.x.jobs.uptime_interval
+    scheduler = Rufus::Scheduler.singleton
+    scheduler.in(interval, job.handler, {:page_id => page_id, :is_second_chance => second_chance})
   end
 
   def perform(page_id, is_second_chance)
+    second_chance = false
     if Page.exists?(page_id)
       page = Page.find(page_id)
-      interval = Rails.configuration.x.jobs.uptime_interval
-      second_chance = false
       begin
         probe = choose_probe
         res = launch_probe(probe, page)
@@ -18,7 +22,7 @@ class UptimeJob < BaseJob
         if res.code == "200" && result["status"] == "success"
           UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
           send_up_notification(page) if last == 0
-          logger.info "Success for #{page.url}"
+          Rails.logger.info "Success for #{page.url}"
         else
           error_content = result["content"] || "empty"
           if is_second_chance
@@ -26,16 +30,15 @@ class UptimeJob < BaseJob
             send_down_notification(page, result["errorMessage"]) if last == 1
           else
             second_chance = true
-            interval = Rails.configuration.x.jobs.second_chanche_interval
           end
-          logger.error "Error #{res.code} for url #{page.url}, second changce is #{is_second_chance}"
+          Rails.logger.error "Error #{res.code} for url #{page.url}, second changce is #{is_second_chance}"
         end
       rescue Exception => e
-        logger.error "Bot error for #{page.url}"
-        logger.error e.to_s
+        Rails.logger.error "Bot error for #{page.url}"
+        Rails.logger.error e.to_s
       end
-      UptimeJob.set(wait: interval).perform_later(page_id, second_chance)
     end
+    second_chance
   end
 
   def launch_probe(probe, page)
@@ -80,7 +83,7 @@ class UptimeJob < BaseJob
       sp.transmission.send_message(user.email, 'jeeves.thebot@botnbot.com', title, message)
     end
   rescue Exception => e
-    logger.error e.to_s
+    Rails.logger.error e.to_s
   end
 
   def send_slack_message(page, message)
@@ -89,6 +92,6 @@ class UptimeJob < BaseJob
       notifier.ping message
     end
   rescue Exception => e
-    logger.error e.to_s
+    Rails.logger.error e.to_s
   end
 end

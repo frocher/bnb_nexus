@@ -1,7 +1,14 @@
 require 'open3'
 
-class ScreenshotJob < ActiveJob::Base
-  queue_as :screenshot
+class ScreenshotJob
+
+  def call(job, time)
+    page_id = job.opts[:page_id]
+    Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
+    perform(page_id)
+    scheduler = Rufus::Scheduler.singleton
+    scheduler.in(Rails.configuration.x.jobs.screenshot_interval, job.handler, {:page_id => page_id})
+  end
 
   def perform(page_id)
     if Page.exists?(page_id)
@@ -16,17 +23,16 @@ class ScreenshotJob < ActiveJob::Base
           page.screenshot = output_file
           page.save!
           output_file.close
-          logger.info "Success for #{page.url}"
+          Rails.logger.info "Success for #{page.url}"
         else
-          logger.error "Error for #{page.url}"
-          logger.error stdout
-          logger.error stderr
+          Rails.logger.error "Error for #{page.url}"
+          Rails.logger.error stdout
+          Rails.logger.error stderr
         end
       rescue Exception => e
-        logger.error "Error for #{page.url}"
-        logger.error e.to_s
+        Rails.logger.error "Error for #{page.url}"
+        Rails.logger.error e.to_s
       end
-      ScreenshotJob.set(wait: Rails.configuration.x.jobs.screenshot_interval).perform_later(page_id)
     end
   end
 

@@ -80,10 +80,8 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { address: "mail", port: 25 }
 
   # Jobs intervals
-  config.x.jobs.check_interval = 2.hours
-  config.x.jobs.uptime_interval = 10.minutes
-  config.x.jobs.second_chanche_interval = 30.seconds
-  config.x.jobs.screenshot_interval = 4.hours
+  config.x.jobs.check_interval = "2h"
+  config.x.jobs.uptime_interval = "10m"
+  config.x.jobs.second_chanche_interval = "30s"
+  config.x.jobs.screenshot_interval = "4h"
 end
-
-Sidekiq::Logging.logger.level = Logger::WARN

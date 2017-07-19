@@ -24,9 +24,6 @@ module BnbNexus
     # Only loads a smaller set of middleware suitable for API only apps.
     config.api_only = true
 
-    # Use sidekiq
-    config.active_job.queue_adapter = :sidekiq
-
     # Array of probes for pages checks and measures
     config.probes = JSON.parse(ENV.fetch("PROBES") { '[{ "name":"localhost", "host":"localhost", "port":3333, "token":"helloman" }]' })
 

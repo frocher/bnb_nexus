@@ -1,11 +1,16 @@
 class CheckJob < BaseJob
-  queue_as do
-    :check
+
+  def call(job, time)
+    page_id = job.opts[:page_id]
+    Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
+    perform(page_id)
+    scheduler = Rufus::Scheduler.singleton
+    scheduler.in(Rails.configuration.x.jobs.check_interval, job.handler, {:page_id => page_id})
   end
 
   def check(page, target)
     if page.last_uptime_value == 0
-      logger.info "Check not done because #{page.url} is down"
+      Rails.logger.info "Check not done because #{page.url} is down"
       return
     end
 
@@ -18,13 +23,13 @@ class CheckJob < BaseJob
         write_perfomance_metrics(probe, target, page, stats)
         resources = result["har"]["log"]["entries"]
         write_assets_metrics(probe, target, page, resources)
-        logger.info "Success for #{page.url}"
+        Rails.logger.info "Success for #{page.url}"
       else
-        logger.error "Error #{res.code} for url #{page.url}"
+        Rails.logger.error "Error #{res.code} for url #{page.url}"
       end
     rescue Exception => e
-      logger.error "Error for #{page.url}"
-      logger.error e.to_s
+      Rails.logger.error "Error for #{page.url}"
+      Rails.logger.error e.to_s
     end
   end
 
@@ -99,7 +104,7 @@ class CheckJob < BaseJob
     return "font" if mime_type.include?("font-") or mime_type.include?("ms-font") or mime_type.include?("font/")
     return "font" if url.ends_with?(".woff") or url.ends_with?(".woff2")
 
-    logger.debug "Other mime type : #{mime_type} for url #{url}"
+    Rails.logger.debug "Other mime type : #{mime_type} for url #{url}"
     return "other"
   end
 

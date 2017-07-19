@@ -30,7 +30,7 @@ You also need to create the InfluxDB database:
 influx -execute 'create database botnbot'
 ```
 
-And you are finally ready to start sidekiq and the API server:
+And you are finally ready to start the API server:
 ```sh
 foreman start
 ```
