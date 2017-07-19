@@ -1,6 +1,7 @@
 FROM frocher/bnb_base
 
 RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y \
+    ca-certificates \
     libsqlite3-dev \
     libmysqlclient-dev \
     mysql-client \
