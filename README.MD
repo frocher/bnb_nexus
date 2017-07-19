@@ -46,19 +46,57 @@ docker run -p 3000:3000 -d nexus bundle exec foreman start
 
 ## Configuration
 
-the BotnBot Nexus uses the following environment variables :
-
-* DEVISE_SECRET_KEY : you must generate a devise key.
-* FACEBOOK_KEY : facebook key for omniauth
-* FACEBOOK_SECRET : facebook secret for omniauth
-* GITHUB_KEY : github key for omniauth
-* GITHUB_SECRET : github secret for omniauth
-* GOOGLE_ANALYTICS_KEY : if you want to track usage statistics
-* GOOGLE_KEY : google key for omniauth
-* GOOGLE_SECRET : google secret for omniauth
-* PROBES : array of probes defined as a json string.
-* SECRET_TOKEN : rails 4 needs a secret token.
-* SPARKPOST_API_KEY : Botnbot currently uses Sparkpost to send alert and report emails.
+The BotnBot Nexus uses the following environment variables.
 
 This software uses the Figaro gem. you can define this variables using an application.yml file or using environment variables.
 An application.yml.sample file is included in the config directory.
+
+### Mandatory configuration
+
+| Name  | Default Value | Description  |
+| ----- | ------------- | ------------ |
+| DEVISE_SECRET_KEY | none | You must generate a Devise key
+| RAILS_ENV | development | Don't forget to switch it to production |
+| PORT | 3000 | Puma server port |
+| PROBES | '[{ "name":"localhost", "host":"localhost", "port":3333}]' | array of probes defined as a json string |
+| SECRET_TOKEN | none | Rails needs a secret token |
+
+### External services and mail configuration
+
+| Name    | Default Value | Description  |
+| --------|:---------:| -----|
+| GOOGLE_ANALYTICS_KEY | none | if you want to track usage statistics |
+| MAILER_SENDER | jeeves.thebot@botnbot.com | Mail sender |
+| MAILER_SENDER | jeeves.thebot@botnbot.com | Mail sender |
+| SPARKPOST_API_KEY | none | Botnbot currently uses Sparkpost to send alert and report emails |
+
+### MySQL Configuration
+
+| Name    | Default Value | Description  |
+| --------|:---------:| -----|
+| DB_HOST | localhost | Database host server |
+| DB_NAME | botnbot | Database name |
+| DB_PASSWORD | &nbsp; | User password |
+| DB_PORT | 3306 | Database port |
+| DB_USERNAME | root | User name used to log in |
+
+### InfluxDB Configuration
+
+| Name    | Default Value | Description  |
+| --------|:---------:| -----|
+| INFLUXDB_HOST | localhost | InfluxDB host server |
+| INFLUXDB_DATABASE | botnbot | Database name |
+| INFLUXDB_PASSWORD | &nbsp; | User password |
+| INFLUXDB_PORT | 8083 | InfluxDB port |
+| INFLUXDB_USERNAME | root | User name used to log in |
+
+### OAuth Configuration
+
+| Name    | Default Value | Description  |
+| --------|:---------:| -----|
+| FACEBOOK_KEY | none | facebook key for omniauth |
+| FACEBOOK_SECRET | none | facebook secret for omniauth |
+| GITHUB_KEY | none | github key for omniauth |
+| GITHUB_SECRET | none | github secret for omniauth |
+| GOOGLE_KEY | none | google key for omniauth |
+| GOOGLE_SECRET | none | google secret for omniauth |

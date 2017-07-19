@@ -28,7 +28,7 @@ module BnbNexus
     config.active_job.queue_adapter = :sidekiq
 
     # Array of probes for pages checks and measures
-    config.probes = JSON.parse(Figaro.env.probes)
+    config.probes = JSON.parse(ENV.fetch("PROBES") { '[{ "name":"localhost", "host":"localhost", "port":3333, "token":"helloman" }]' })
 
     # Omniauth middleware
     config.session_store :cookie_store, key: '_interslice_session'
