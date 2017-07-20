@@ -41,9 +41,6 @@ gem 'figaro'
 # Cron jobs
 gem 'rufus-scheduler'
 
-# launch
-gem 'foreman'
-
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 
