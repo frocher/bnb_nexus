@@ -7,19 +7,25 @@ The BotnBot Nexus is the central point of the BotnBot application. It is a Rails
 You'll need the following software to make the Nexus run on your system:
 
 * Node.js
-* Ruby 2.3
+* Ruby >= 2.3
 * [PhantomJS](http://www.http://phantomjs.org/)
 * [InfluxDB](https://influxdata.com/time-series-platform/influxdb/)
-* Redis
+* [MySQL](https://www.mysql.com)
 * a SMTP server
 * [one or more BotnBot probes](https://github.com/frocher/bnb_probe)
 
-## Quicklaunch for Development
+## Quick launch for Development
 
 The Nexus relies on Figaro for environment variables. You must start to create an *application.yml* file in your *config* directory. You can find an *application.yml.sample* in the *config* directory to copy and adapt.
 
 With Ruby installed, run the following lines from the root of your project download:
 
+You first need to create the MySQL database:
+```sh
+mysql -u root -e "create database botnbot"
+```
+
+Then create the database schema:
 ```sh
 bundle install
 rake db:migrate
@@ -32,7 +38,7 @@ influx -execute 'create database botnbot'
 
 And you are finally ready to start the API server:
 ```sh
-foreman start
+rails s
 ```
 
 ## The docker way
@@ -40,7 +46,7 @@ foreman start
 TODO...
 
 ```sh
-docker run -p 3000:3000 -d nexus bundle exec foreman start
+docker run -p 3000:3000 -d nexus bundle exec rails
 ```
 
 
@@ -48,7 +54,7 @@ docker run -p 3000:3000 -d nexus bundle exec foreman start
 
 The BotnBot Nexus uses the following environment variables.
 
-This software uses the Figaro gem. you can define this variables using an application.yml file or using environment variables.
+This software uses the [Figaro gem](https://github.com/laserlemon/figaro). you can define this variables using an application.yml file or using environment variables.
 An application.yml.sample file is included in the config directory.
 
 ### Mandatory configuration
@@ -66,7 +72,6 @@ An application.yml.sample file is included in the config directory.
 | Name    | Default Value | Description  |
 | --------|:---------:| -----|
 | GOOGLE_ANALYTICS_KEY | none | if you want to track usage statistics |
-| MAILER_SENDER | jeeves.thebot@botnbot.com | Mail sender |
 | MAILER_SENDER | jeeves.thebot@botnbot.com | Mail sender |
 | SPARKPOST_API_KEY | none | Botnbot currently uses Sparkpost to send alert and report emails |
 
