@@ -1,5 +1,3 @@
-require 'sparkpost'
-
 class UptimeJob < BaseJob
   def call(job, time)
     page_id = job.opts[:page_id]
@@ -31,7 +29,7 @@ class UptimeJob < BaseJob
           else
             second_chance = true
           end
-          Rails.logger.error "Error #{res.code} for url #{page.url}, second changce is #{is_second_chance}"
+          Rails.logger.error "Error #{res.code} for url #{page.url}, second chance is #{is_second_chance}"
         end
       rescue Exception => e
         Rails.logger.error "Bot error for #{page.url}"
@@ -57,33 +55,41 @@ class UptimeJob < BaseJob
 
   def send_up_notification(page)
     duration = page.last_downtime_duration
-    message = "The page #{page.url} is up again after a downtime of #{duration}."
     if page.mail_notify
-      send_mail(page, "Page #{page.url} is up", message)
+      send_up_mail(page, duration)
     end
     if page.slack_notify
-      send_slack_message(page, message)
+      send_slack_message(page, "The page #{page.url} is up again after a downtime of #{duration}.")
     end
   end
 
   def send_down_notification(page, error_message)
-    message = "The page #{page.url} is down : #{error_message}"
     if page.mail_notify
-      send_mail(page, "Page #{page.url} is down", message)
+      send_down_mail(page, error_message)
     end
     if page.slack_notify
-      send_slack_message(page, message)
+      send_slack_message(page, "The page #{page.url} is down : #{error_message}")
     end
   end
 
-  def send_mail(page, title, message)
-    sp = SparkPost::Client.new()
+  def send_down_mail(page, error_message)
     page.page_members.each do |member|
       user = member.user
-      sp.transmission.send_message(user.email, 'jeeves.thebot@botnbot.com', title, message)
+      UserMailer.down(user, page, error_message).deliver_now
     end
   rescue Exception => e
     Rails.logger.error e.to_s
+    e.backtrace.each { |line| Rails.logger.error line }
+  end
+
+  def send_up_mail(page, duration)
+    page.page_members.each do |member|
+      user = member.user
+      UserMailer.up(user, page, duration).deliver_now
+    end
+  rescue Exception => e
+    Rails.logger.error e.to_s
+    e.backtrace.each { |line| Rails.logger.error line }
   end
 
   def send_slack_message(page, message)

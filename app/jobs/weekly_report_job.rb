@@ -1,6 +1,4 @@
-require 'sparkpost'
 require 'ostruct'
-
 
 class WeeklyReportJob
   include ActionView::Helpers::NumberHelper
@@ -31,9 +29,7 @@ class WeeklyReportJob
         @context.pages << construct_page(page, @context.period_start, @context.period_end)
       end
 
-      file_path = Rails.root.join("app", "views", "mail.slim")
-      message = Slim::Template.new(file_path).render(self)
-      send_mail(user, generate_title(@context.period_start, @context.period_end), message)
+      send_mail(user, generate_title(@context.period_start, @context.period_end))
     end
   rescue Exception => e
     Rails.logger.error "Error processing user " + user.email
@@ -44,9 +40,8 @@ class WeeklyReportJob
     "Botnbot weekly report " + start_date.strftime("%m/%d/%Y") + " to " + end_date.strftime("%m/%d/%Y")
   end
 
-  def send_mail(user, title, message)
-    sp = SparkPost::Client.new()
-    sp.transmission.send_message(user.email, 'jeeves.thebot@botnbot.com', title, message)
+  def send_mail(user, title)
+    UserMailer.weekly_summary(user, title, @context).deliver_now
   rescue Exception => e
     Rails.logger.error "Error sending mail to user " + user.email
     Rails.logger.error e.to_s

@@ -21,7 +21,7 @@ gem 'kaminari'
 gem 'paperclip'
 
 # Notifications (mail, slack)
-gem 'sparkpost'
+gem 'sparkpost_rails', :git => 'git@github.com:frocher/sparkpost_rails.git'
 gem 'slack-notifier'
 gem 'slim'
 
