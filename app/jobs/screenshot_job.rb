@@ -6,8 +6,6 @@ class ScreenshotJob
     page_id = job.opts[:page_id]
     Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
     perform(page_id)
-    scheduler = Rufus::Scheduler.singleton
-    scheduler.in(Rails.configuration.x.jobs.screenshot_interval, job.handler, {:page_id => page_id})
   end
 
   def perform(page_id)

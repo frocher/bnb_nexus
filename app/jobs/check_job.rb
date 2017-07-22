@@ -1,21 +1,37 @@
 class CheckJob < BaseJob
 
-  def call(job, time)
-    page_id = job.opts[:page_id]
-    Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
-    perform(page_id)
+  def self.schedule_next(delay, handler, page_id, target)
+    probes = Rails.application.config.probes
+    probe = probes.sample
+    mutex_name = "check_#{probe['name']}"
+
     scheduler = Rufus::Scheduler.singleton
-    scheduler.in(Rails.configuration.x.jobs.check_interval, job.handler, {:page_id => page_id})
+    scheduler.in(delay, handler, {:page_id => page_id, :probe => probe, :target => target, :mutex => mutex_name})
   end
 
-  def check(page, target)
+  def call(job, time)
+    page_id = job.opts[:page_id]
+    probe = job.opts[:probe]
+    target = job.opts[:target]
+    Rails.logger.info "Starting job #{self.class.name}/#{target} for page #{page_id} on probe #{probe['name']}"
+    perform(page_id, target, probe)
+    CheckJob.schedule_next(Rails.configuration.x.jobs.check_interval, job.handler, page_id, target)
+  end
+
+  def perform(page_id, target, probe)
+    if Page.exists?(page_id)
+      page = Page.find(page_id)
+      check(page, target, probe)
+    end
+  end
+
+  def check(page, target, probe)
     if page.last_uptime_value == 0
       Rails.logger.info "Check not done because #{page.url} is down"
       return
     end
 
     begin
-      probe = choose_probe
       res = launch_probe(probe, target, page)
       if res.is_a?(Net::HTTPSuccess)
         result = JSON.parse(res.body)

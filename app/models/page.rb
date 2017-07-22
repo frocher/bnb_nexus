@@ -126,10 +126,11 @@ class Page < ActiveRecord::Base
 
   def init_jobs
     scheduler = Rufus::Scheduler.singleton
-    scheduler.in("#{rand(1..60)}m", ScreenshotJob.new, {:page_id => id})
-    scheduler.in("#{rand(1..120)}m", DesktopCheckJob.new, {:page_id => id})
-    scheduler.in("#{rand(1..120)}m", MobileCheckJob.new, {:page_id => id})
-    scheduler.in("#{rand(1..60)}m", UptimeJob.new, {:page_id => id})
+    scheduler.every(Rails.configuration.x.jobs.screenshot_interval, ScreenshotJob.new, {:page_id => id, :mutex => "screenshot", :first_in => "#{rand(1..60)}m"})
+
+    CheckJob.schedule_next("#{rand(1..120)}m", CheckJob.new, id, "desktop")
+    CheckJob.schedule_next("#{rand(1..120)}m", CheckJob.new, id, "mobile")
+    UptimeJob.schedule_next("#{rand(1..60)}m", UptimeJob.new, id, false)
   end
 
   private

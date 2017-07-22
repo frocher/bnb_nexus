@@ -1,19 +1,28 @@
 class UptimeJob < BaseJob
-  def call(job, time)
-    page_id = job.opts[:page_id]
-    Rails.logger.info "Starting job #{self.class.name} for page #{page_id}"
-    second_chance = perform(page_id, job.opts[:is_second_chance] || false)
-    interval = second_chance ? Rails.configuration.x.jobs.second_chanche_interval : Rails.configuration.x.jobs.uptime_interval
+
+  def self.schedule_next(delay, handler, page_id, second_chance)
+    probes = Rails.application.config.probes
+    probe = probes.sample
+    mutex_name = "uptime_#{probe['name']}"
+
     scheduler = Rufus::Scheduler.singleton
-    scheduler.in(interval, job.handler, {:page_id => page_id, :is_second_chance => second_chance})
+    scheduler.in(delay, handler, {:page_id => page_id, :is_second_chance => second_chance, :probe => probe, :mutex => mutex_name})
   end
 
-  def perform(page_id, is_second_chance)
+  def call(job, time)
+    page_id = job.opts[:page_id]
+    probe = job.opts[:probe]
+    Rails.logger.info "Starting job #{self.class.name} for page #{page_id} on probe #{probe['name']}"
+    second_chance = perform(page_id, job.opts[:is_second_chance] || false, probe)
+    delay = second_chance ? Rails.configuration.x.jobs.second_chanche_interval : Rails.configuration.x.jobs.uptime_interval
+    UptimeJob.schedule_next(delay, job.handler, page_id, second_chance)
+  end
+
+  def perform(page_id, is_second_chance, probe)
     second_chance = false
     if Page.exists?(page_id)
       page = Page.find(page_id)
       begin
-        probe = choose_probe
         res = launch_probe(probe, page)
         result = JSON.parse(res.body)
         last = page.last_uptime_value
