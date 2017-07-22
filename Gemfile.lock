@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:frocher/sparkpost_rails.git
+  remote: https://github.com/frocher/sparkpost_rails.git
   revision: de153adb575b8b57f569aa1a07fbe9b5a081c38e
   specs:
     sparkpost_rails (1.4.0)
