@@ -6,7 +6,7 @@
 #
 default: &default
   adapter: mysql2
-  pool: <%= ENV.fetch("DB_POOL") { 10 } %>
+  pool: <%= ENV.fetch("DB_POOL") { 20 } %>
   database: <%= ENV.fetch("DB_NAME") { "botnbot" } %>
   username: <%= ENV.fetch("DB_USERNAME") { "root" } %>
   password: <%= ENV.fetch("DB_PASSWORD") { "" } %>
