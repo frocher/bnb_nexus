@@ -40,12 +40,7 @@ class PagesController < ApplicationController
     can_update_member = can?(current_user, :update_page_member, @page)
     can_remove_member = can?(current_user, :delete_page_member, @page)
 
-    render json: @page.as_json().merge({
-      can_edit: can_edit,
-      can_delete: can_delete,
-      can_add_member: can_add_member,
-      can_update_member: can_update_member,
-      can_remove_member: can_remove_member})
+    render_page
   end
 
   def create
@@ -69,7 +64,7 @@ class PagesController < ApplicationController
         member.role = :admin
         member.save!
 
-        render json: @page
+        render_page
       rescue ActiveRecord::RecordInvalid
         render json: {errors: @page.errors}, status: 422
       end
@@ -89,7 +84,7 @@ class PagesController < ApplicationController
     @page.slack_channel = params[:slack_channel] || ""
     @page.save!
 
-    render json: @page
+    render_page
 
     rescue ActiveRecord::RecordInvalid
       render json: {errors: @page.errors}, status: 422
@@ -116,6 +111,21 @@ class PagesController < ApplicationController
 
 
 private
+
+  def render_page
+    can_edit  = can?(current_user, :update_page, @page)
+    can_delete = can?(current_user, :delete_page, @page)
+    can_add_member = can?(current_user, :create_page_member, @page)
+    can_update_member = can?(current_user, :update_page_member, @page)
+    can_remove_member = can?(current_user, :delete_page_member, @page)
+
+    render json: @page.as_json().merge({
+      can_edit: can_edit,
+      can_delete: can_delete,
+      can_add_member: can_add_member,
+      can_update_member: can_update_member,
+      can_remove_member: can_remove_member})
+  end
 
   def set_page
     @page = Page.find(params[:id])
