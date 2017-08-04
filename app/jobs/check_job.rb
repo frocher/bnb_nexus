@@ -19,9 +19,11 @@ class CheckJob < BaseJob
   end
 
   def perform(page_id, target, probe)
-    if Page.exists?(page_id)
-      page = Page.find(page_id)
-      check(page, target, probe)
+    ActiveRecord::Base.connection_pool.with_connection do
+      if Page.exists?(page_id)
+        page = Page.find(page_id)
+        check(page, target, probe)
+      end
     end
   end
 

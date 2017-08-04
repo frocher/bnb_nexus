@@ -20,29 +20,31 @@ class UptimeJob < BaseJob
 
   def perform(page_id, is_second_chance, probe)
     second_chance = false
-    if Page.exists?(page_id)
-      page = Page.find(page_id)
-      begin
-        res = launch_probe(probe, page)
-        result = JSON.parse(res.body)
-        last = page.last_uptime_value
-        if res.code == "200" && result["status"] == "success"
-          UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
-          send_up_notification(page) if last == 0
-          Rails.logger.info "Success for #{page.url}"
-        else
-          error_content = result["content"] || "empty"
-          if is_second_chance
-            UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
-            send_down_notification(page, result["errorMessage"]) if last == 1
+    ActiveRecord::Base.connection_pool.with_connection do
+      if Page.exists?(page_id)
+        page = Page.find(page_id)
+        begin
+          res = launch_probe(probe, page)
+          result = JSON.parse(res.body)
+          last = page.last_uptime_value
+          if res.code == "200" && result["status"] == "success"
+            UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
+            send_up_notification(page) if last == 0
+            Rails.logger.info "Success for #{page.url}"
           else
-            second_chance = true
+            error_content = result["content"] || "empty"
+            if is_second_chance
+              UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+              send_down_notification(page, result["errorMessage"]) if last == 1
+            else
+              second_chance = true
+            end
+            Rails.logger.error "Error #{res.code} for url #{page.url}, second chance is #{is_second_chance}"
           end
-          Rails.logger.error "Error #{res.code} for url #{page.url}, second chance is #{is_second_chance}"
+        rescue Exception => e
+          Rails.logger.error "Bot error for #{page.url}"
+          Rails.logger.error e.to_s
         end
-      rescue Exception => e
-        Rails.logger.error "Bot error for #{page.url}"
-        Rails.logger.error e.to_s
       end
     end
     second_chance
