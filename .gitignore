@@ -19,7 +19,7 @@
 .DS_Store
 
 # Ignore generated files
-/screenshots/*
+/reports/*
 
 # Ignore application configuration
 /config/application.yml
