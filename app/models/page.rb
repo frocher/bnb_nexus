@@ -25,7 +25,7 @@ class Page < ActiveRecord::Base
   after_create :init_jobs
 
   has_attached_file :screenshot,
-    path: ":rails_root/screenshots/:id/:style/:filename",
+    path: ":rails_root/reports/screenshots/:id/:style/:filename",
     default_url: "/images/:style/missing.png",
     styles: { medium: "", thumb: "320x240#" },
     convert_options: {

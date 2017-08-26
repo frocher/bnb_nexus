@@ -13,9 +13,9 @@ class ScreenshotJob
       if Page.exists?(page_id)
         page = Page.find(page_id)
         begin
-          output_path = File.join(Rails.root, 'screenshots', page.id.to_s, 'original', page.id.to_s + '.png')
+          output_path = File.join(Rails.root, "reports/screenshots", page.id.to_s, "original", page.id.to_s + ".png")
           file = File.join(Rails.root, 'app', 'phantom', 'screenshot.js')
-          cmd = 'phantomjs --ssl-protocol=any ' + file + " " + page.url + " " + output_path + " 1024px*768px"
+          cmd = "phantomjs --ssl-protocol=any #{file} #{page.url} #{output_path} 1024px*768px"
           stdout,stderr,status = Open3.capture3(cmd)
           if status.success?
             output_file = File.new output_path
