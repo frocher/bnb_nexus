@@ -7,6 +7,8 @@ end
 
 gem 'rails', '~> 5.1.2'
 
+gem 'rack-cors', :require => 'rack/cors'
+
 # Database access
 gem 'mysql2'
 gem 'influxer'
