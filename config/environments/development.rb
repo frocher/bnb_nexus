@@ -51,6 +51,12 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { address: "localhost", port: 1025 }
   config.action_mailer.logger = ActiveSupport::Logger.new(STDOUT)
 
+  # Jobs start
+  config.x.jobs.har_start = 3
+  config.x.jobs.lighthouse_start = 3
+  config.x.jobs.uptime_start = 3
+  config.x.jobs.screenshot_start = 3
+
   # Jobs intervals
   config.x.jobs.har_interval = "15m"
   config.x.jobs.lighthouse_interval = "15m"

@@ -125,11 +125,15 @@ class Page < ActiveRecord::Base
 
   def init_jobs
     scheduler = Rufus::Scheduler.singleton
-    scheduler.every(Rails.configuration.x.jobs.screenshot_interval, ScreenshotJob.new, {:page_id => id, :mutex => "screenshot", :first_in => "#{rand(1..60)}m"})
+    max_start = Rails.configuration.x.jobs.screenshot_start
+    scheduler.every(Rails.configuration.x.jobs.screenshot_interval, ScreenshotJob.new, {:page_id => id, :mutex => "screenshot", :first_in => "#{rand(1..max_start)}m"})
 
-    UptimeJob.schedule_next("#{rand(1..60)}m", UptimeJob.new, id, false)
-    HarJob.schedule_next("#{rand(1..120)}m", HarJob.new, id)
-    LighthouseJob.schedule_next("#{rand(1..120)}m", LighthouseJob.new, id)
+    max_start = Rails.configuration.x.jobs.uptime_start
+    UptimeJob.schedule_next("#{rand(1..max_start)}m", UptimeJob.new, id, false)
+    max_start = Rails.configuration.x.jobs.har_start
+    HarJob.schedule_next("#{rand(1..max_start)}m", HarJob.new, id)
+    max_start = Rails.configuration.x.jobs.lighthouse_start
+    LighthouseJob.schedule_next("#{rand(1..max_start)}m", LighthouseJob.new, id)
   end
 
   private

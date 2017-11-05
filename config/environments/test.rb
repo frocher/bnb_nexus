@@ -40,6 +40,12 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
+  # Jobs start
+  config.x.jobs.har_start = 3
+  config.x.jobs.lighthouse_start = 3
+  config.x.jobs.uptime_start = 3
+  config.x.jobs.screenshot_start = 3
+
   # Jobs intervals
   config.x.jobs.har_interval = "15m"
   config.x.jobs.lighthouse_interval = "15m"

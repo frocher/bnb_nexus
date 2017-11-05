@@ -79,6 +79,12 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :sparkpost
   config.action_mailer.smtp_settings = { address: "mail", port: 25 }
 
+  # Jobs start
+  config.x.jobs.har_start = 120
+  config.x.jobs.lighthouse_start = 120
+  config.x.jobs.uptime_start = 60
+  config.x.jobs.screenshot_start = 60
+
   # Jobs intervals
   config.x.jobs.har_interval = "6h"
   config.x.jobs.lighthouse_interval = "6h"
