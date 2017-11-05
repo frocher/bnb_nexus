@@ -1,82 +1,61 @@
-class CheckJob < BaseJob
+class HarJob
 
-  def self.schedule_next(delay, handler, page_id, target)
+  def self.schedule_next(delay, handler, page_id)
     probes = Rails.application.config.probes
     probe = probes.sample
-    mutex_name = "check_#{probe['name']}"
+    mutex_name = "har_#{probe['name']}"
 
     scheduler = Rufus::Scheduler.singleton
-    scheduler.in(delay, handler, {:page_id => page_id, :probe => probe, :target => target, :mutex => mutex_name})
+    scheduler.in(delay, handler, {:page_id => page_id, :probe => probe, :mutex => mutex_name})
   end
 
   def call(job, time)
     page_id = job.opts[:page_id]
     probe = job.opts[:probe]
-    target = job.opts[:target]
-    Rails.logger.info "Starting job #{self.class.name}/#{target} for page #{page_id} on probe #{probe['name']}"
-    perform(page_id, target, probe)
-    CheckJob.schedule_next(Rails.configuration.x.jobs.check_interval, job.handler, page_id, target)
-  end
-
-  def perform(page_id, target, probe)
+    Rails.logger.info "Starting job #{self.class.name} for page #{page_id} on probe #{probe['name']}"
     ActiveRecord::Base.connection_pool.with_connection do
       if Page.exists?(page_id)
         page = Page.find(page_id)
-        check(page, target, probe)
+        perform(page, probe)
       end
     end
+    HarJob.schedule_next(Rails.configuration.x.jobs.har_interval, job.handler, page_id)
   end
 
-  def check(page, target, probe)
+  def perform(page, probe)
     if page.last_uptime_value == 0
-      Rails.logger.info "Check not done because #{page.url} is down"
+      Rails.logger.info "Har job not done because #{page.url} is down"
       return
     end
 
     begin
-      res = launch_probe(probe, target, page)
+      res = launch_probe(probe, page)
       if res.is_a?(Net::HTTPSuccess)
         result = JSON.parse(res.body)
-        stats = result["stats"]
-        write_perfomance_metrics(probe, target, page, stats)
-        resources = result["har"]["log"]["entries"]
-        write_assets_metrics(probe, target, page, resources)
-        Rails.logger.info "Success for #{page.url}"
+        metric = write_metrics(probe, page, result)
+        Rails.logger.info "Success har for #{page.id} : #{page.url}"
       else
-        Rails.logger.error "Error #{res.code} for url #{page.url}"
+        Rails.logger.error "Error har #{res.code} for #{page.id} : #{page.url}"
       end
     rescue Exception => e
-      Rails.logger.error "Error for #{page.url}"
+      Rails.logger.error "Error for #{page.id} : #{page.url}"
       Rails.logger.error e.to_s
     end
   end
 
-  def launch_probe(probe, target, page)
-    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/check?url=#{page.url}&target=#{target}&token=#{probe['token']}")
+  def launch_probe(probe, page)
+    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/har?url=#{page.url}&token=#{probe['token']}")
     request = Net::HTTP::Get.new(uri.request_uri)
-    response = Net::HTTP.start(uri.host, uri.port) {|http|
+    response = Net::HTTP.start(uri.host, uri.port) do |http|
       http.read_timeout = 120
       http.request(request)
-    }
+    end
     response
   end
 
-  def launch_probe1(probe, target, page)
-    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/check?url=#{page.url}&target=#{target}&token=#{probe['token']}")
-    Net::HTTP::get_response(uri)
-  end
+  def write_metrics(probe, page, result)
+    resources = result["log"]["entries"]
 
-  def write_perfomance_metrics(probe, target, page, stats)
-    metric = PerformanceMetrics.new page_id: page.id, target: target, probe: probe["name"]
-    metric.response_start = stats["responseStart"].to_i
-    metric.first_paint    = stats["firstPaint"].to_i
-    metric.speed_index    = stats["speedIndex"].to_i
-    metric.dom_ready      = stats["domInteractive"].to_i
-    metric.page_load_time = stats["pageLoadTime"].to_i
-    metric.write!
-  end
-
-  def write_assets_metrics(probe, target, page, resources)
     data = {}
     data["html_requests"]  = 0
     data["js_requests"]    = 0
@@ -98,7 +77,8 @@ class CheckJob < BaseJob
       data[mime_type + "_bytes"]    += content["size"]
     end
 
-    metric = AssetsMetrics.new page_id: page.id, target: target, probe: probe["name"]
+    metric = AssetsMetrics.new page_id: page.id, probe: probe["name"]
+    metric.time_key = Time.now.strftime("%Y%m%d%H%M%S")
     metric.html_requests  = data["html_requests"]
     metric.js_requests    = data["js_requests"]
     metric.css_requests   = data["css_requests"]

@@ -92,35 +92,34 @@ class Page < ActiveRecord::Base
     convert_influx_result(data)
   end
 
-  def performance_summary(target, start_date, end_date)
-    selectValue = "median(dom_ready) as dom_ready," \
-                  "median(first_paint) as first_paint," \
-                  "median(page_load_time) as page_load," \
-                  "median(response_start) as response_start," \
-                  "median(speed_index) as speed_index"
-    data = PerformanceMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+  def performance_summary(start_date, end_date)
+    select_value = "median(ttfb) as ttfb," \
+                   "median(first_meaningful_paint) as first_meaningful_paint," \
+                   "median(first_interactive) as first_interactive," \
+                   "median(speed_index) as speed_index"
+    data = PerformanceMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 
-  def requests_summary(target, start_date, end_date)
-    selectValue = "median(html_requests) as html," \
-                  "median(js_requests) as js," \
-                  "median(css_requests) as css," \
-                  "median(image_requests) as image," \
-                  "median(font_requests) as font," \
-                  "median(other_requests) as other"
-    data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+  def requests_summary(start_date, end_date)
+    select_value = "median(html_requests) as html," \
+                   "median(js_requests) as js," \
+                   "median(css_requests) as css," \
+                   "median(image_requests) as image," \
+                   "median(font_requests) as font," \
+                   "median(other_requests) as other"
+    data = AssetsMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 
-  def bytes_summary(target, start_date, end_date)
-    selectValue = "median(html_bytes) as html," \
-                  "median(js_bytes) as js," \
-                  "median(css_bytes) as css," \
-                  "median(image_bytes) as image," \
-                  "median(font_bytes) as font," \
-                  "median(other_bytes) as other"
-    data = AssetsMetrics.select(selectValue).by_page(id).by_target(target).where(time: start_date..end_date)
+  def bytes_summary(start_date, end_date)
+    select_value = "median(html_bytes) as html," \
+                   "median(js_bytes) as js," \
+                   "median(css_bytes) as css," \
+                   "median(image_bytes) as image," \
+                   "median(font_bytes) as font," \
+                   "median(other_bytes) as other"
+    data = AssetsMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 
@@ -128,9 +127,9 @@ class Page < ActiveRecord::Base
     scheduler = Rufus::Scheduler.singleton
     scheduler.every(Rails.configuration.x.jobs.screenshot_interval, ScreenshotJob.new, {:page_id => id, :mutex => "screenshot", :first_in => "#{rand(1..60)}m"})
 
-    CheckJob.schedule_next("#{rand(1..120)}m", CheckJob.new, id, "desktop")
-    CheckJob.schedule_next("#{rand(1..120)}m", CheckJob.new, id, "mobile")
     UptimeJob.schedule_next("#{rand(1..60)}m", UptimeJob.new, id, false)
+    HarJob.schedule_next("#{rand(1..120)}m", HarJob.new, id)
+    LighthouseJob.schedule_next("#{rand(1..120)}m", LighthouseJob.new, id)
   end
 
   private

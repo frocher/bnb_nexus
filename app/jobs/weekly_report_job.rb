@@ -56,9 +56,9 @@ class WeeklyReportJob
     stats.name = page.name
 
     uptime_summary  = page.uptime_summary(start_date, end_date)
-    perf_summary  = page.performance_summary("desktop", start_date, end_date)
-    req_summary   = page.requests_summary("desktop", start_date, end_date)
-    bytes_summary = page.bytes_summary("desktop", start_date, end_date)
+    perf_summary  = page.performance_summary(start_date, end_date)
+    req_summary   = page.requests_summary(start_date, end_date)
+    bytes_summary = page.bytes_summary(start_date, end_date)
 
     stats.empty = uptime_summary.nil? || perf_summary.nil? || req_summary.nil? || bytes_summary.nil?
 
@@ -79,7 +79,7 @@ class WeeklyReportJob
     previous_start = start_date - 1.week.to_i
     previous_end = end_date - 1.week.to_i
 
-    previous_perf = page.performance_summary("desktop", previous_start, previous_end)
+    previous_perf = page.performance_summary(previous_start, previous_end)
 
     stats.last_speed_index = extract_value(previous_perf, "speed_index", 0)
     stats.speed_index_delta = compute_delta(stats.speed_index, stats.last_speed_index)
@@ -88,11 +88,11 @@ class WeeklyReportJob
     stats.last_uptime = extract_value(previous_uptime, "value", 0, :*, 100)
     stats.uptime_delta = stats.uptime - stats.last_uptime
 
-    previous_req = page.requests_summary("desktop", previous_start, previous_end)
+    previous_req = page.requests_summary(previous_start, previous_end)
     stats.last_assets_count = sum_assets(previous_req)
     stats.assets_count_delta = compute_delta(stats.assets_count, stats.last_assets_count)
 
-    previous_bytes = page.bytes_summary("desktop", previous_start, previous_end)
+    previous_bytes = page.bytes_summary(previous_start, previous_end)
     stats.last_assets_size = sum_assets(previous_bytes) / 1024
     stats.assets_size_delta = compute_delta(stats.assets_size, stats.last_assets_size)
   end
@@ -107,10 +107,10 @@ class WeeklyReportJob
 
   def construct_details(page, stats, start_date, end_date)
     stats.uptimes         = []
-    stats.response_times  = []
+    stats.first_bytes     = []
     stats.first_paints    = []
     stats.speed_indexes   = []
-    stats.page_loads      = []
+    stats.interactives    = []
     stats.html_requests   = []
     stats.js_requests     = []
     stats.css_requests    = []
@@ -139,15 +139,15 @@ class WeeklyReportJob
   end
 
   def construct_performances(page, stats, current_day)
-    current_perf = page.performance_summary("desktop", current_day.beginning_of_day, current_day.end_of_day)
-    stats.response_times << extract_value(current_perf, "response_start", "N/A")
-    stats.first_paints   << extract_value(current_perf, "first_paint", "N/A")
-    stats.speed_indexes  << extract_value(current_perf, "speed_index", "N/A")
-    stats.page_loads     << extract_value(current_perf, "page_load", "N/A")
+    current_perf = page.performance_summary(current_day.beginning_of_day, current_day.end_of_day)
+    stats.first_bytes   << extract_value(current_perf, "ttfb", "N/A")
+    stats.first_paints  << extract_value(current_perf, "first_meaningful_paint", "N/A")
+    stats.speed_indexes << extract_value(current_perf, "speed_index", "N/A")
+    stats.interactives  << extract_value(current_perf, "first_interactive", "N/A")
   end
 
   def construct_requests(page, stats, current_day)
-    current_req = page.requests_summary("desktop", current_day.beginning_of_day, current_day.end_of_day)
+    current_req = page.requests_summary(current_day.beginning_of_day, current_day.end_of_day)
     stats.html_requests  << extract_value(current_req, "html", "N/A")
     stats.js_requests    << extract_value(current_req, "js", "N/A")
     stats.css_requests   << extract_value(current_req, "css", "N/A")
@@ -157,7 +157,7 @@ class WeeklyReportJob
   end
 
   def construct_bytes(page, stats, current_day)
-    current_bytes = page.bytes_summary("desktop", current_day.beginning_of_day, current_day.end_of_day)
+    current_bytes = page.bytes_summary(current_day.beginning_of_day, current_day.end_of_day)
     stats.html_bytes  << extract_value(current_bytes, "html", "N/A", :/, 1024)
     stats.js_bytes    << extract_value(current_bytes, "js", "N/A", :/, 1024)
     stats.css_bytes   << extract_value(current_bytes, "css", "N/A", :/, 1024)

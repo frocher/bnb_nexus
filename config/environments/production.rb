@@ -80,7 +80,8 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { address: "mail", port: 25 }
 
   # Jobs intervals
-  config.x.jobs.check_interval = "2h"
+  config.x.jobs.har_interval = "6h"
+  config.x.jobs.lighthouse_interval = "6h"
   config.x.jobs.uptime_interval = "10m"
   config.x.jobs.second_chanche_interval = "30s"
   config.x.jobs.screenshot_interval = "4h"

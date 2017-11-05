@@ -9,16 +9,11 @@ class Pages::StatsController < ApplicationController
     @end_date   = Date.parse(params[:end]).end_of_day
 
     result = {}
-    result["uptime"] = get_uptime(@page, @start_date, @end_date)
-    result["performance"] = {}
-    result["performance"]["desktop"] = get_performance(@page, "desktop", @start_date, @end_date)
-    result["performance"]["mobile"]  = get_performance(@page, "mobile", @start_date, @end_date)
-    result["requests"] = {}
-    result["requests"]["desktop"] = get_requests(@page, "desktop", @start_date, @end_date)
-    result["requests"]["mobile"]  = get_requests(@page, "mobile", @start_date, @end_date)
-    result["bytes"] = {}
-    result["bytes"]["desktop"] = get_bytes(@page, "desktop", @start_date, @end_date)
-    result["bytes"]["mobile"]  = get_bytes(@page, "mobile", @start_date, @end_date)
+    result["uptime"]      = get_uptime(@page, @start_date, @end_date)
+    result["lighthouse"]  = get_lighthouse(@page, @start_date, @end_date)
+    result["performance"] = get_performance(@page, @start_date, @end_date)
+    result["requests"]    = get_requests(@page, @start_date, @end_date)
+    result["bytes"]       = get_bytes(@page, @start_date, @end_date)
 
     render json: result
   end
@@ -29,80 +24,99 @@ class Pages::StatsController < ApplicationController
   end
 
   def read_uptime_points(page, start_date, end_date)
-    nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays < 7 ? '1h' : '1d'
+    nb_days = (end_date - start_date).to_i / 86400
+    interval = nb_days < 7 ? '1h' : '1d'
     data = UptimeMetrics.select("mean(value) as value").by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
 
-  def read_performance_summary(page, target, start_date, end_date)
-    selectValue = "median(dom_ready) as dom_ready," \
-                  "median(first_paint) as first_paint," \
-                  "median(page_load_time) as page_load," \
-                  "median(response_start) as response_start," \
-                  "median(speed_index) as speed_index"
-    data = PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+  def read_lighthouse_summary(page, start_date, end_date)
+    select_value = "median(pwa) as pwa," \
+                   "median(performance) as performance," \
+                   "median(accessibility) as accessibility," \
+                   "median(best_practices) as best_practices"
+    data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
     data.to_a
   end
 
-  def read_performance_points(page, target, start_date, end_date)
-    selectValue = "mean(dom_ready) as dom_ready," \
-                  "mean(first_paint) as first_paint," \
-                  "mean(page_load_time) as page_load," \
-                  "mean(response_start) as response_start," \
-                  "mean(speed_index) as speed_index"
+  def read_lighthouse_points(page, start_date, end_date)
+    select_value = "mean(pwa) as pwa," \
+                   "mean(performance) as performance," \
+                   "mean(accessibility) as accessibility," \
+                   "mean(best_practices) as best_practices"
 
-    nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays < 7 ? '1h' : '1d'
-    data = PerformanceMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+    nb_days = (end_date - start_date).to_i / 86400
+    interval = nb_days < 7 ? '1h' : '1d'
+    data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
 
-  def read_requests_summary(page, target, start_date, end_date)
-    selectValue = "median(html_requests) as html," \
+  def read_performance_summary(page, start_date, end_date)
+    select_value = "median(ttfb) as ttfb," \
+                   "median(first_meaningful_paint) as first_meaningful_paint," \
+                   "median(first_interactive) as first_interactive," \
+                   "median(speed_index) as speed_index"
+    data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
+    data.to_a
+  end
+
+  def read_performance_points(page, start_date, end_date)
+    select_value = "mean(ttfb) as ttfb," \
+                   "mean(first_meaningful_paint) as first_meaningful_paint," \
+                   "mean(first_interactive) as first_interactive," \
+                   "mean(speed_index) as speed_index"
+
+    nb_days = (end_date - start_date).to_i / 86400
+    interval = nb_days < 7 ? '1h' : '1d'
+    data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
+    data.to_a
+  end
+
+  def read_requests_summary(page, start_date, end_date)
+    select_value = "median(html_requests) as html," \
+                   "median(js_requests) as js," \
+                   "median(css_requests) as css," \
+                   "median(image_requests) as image," \
+                   "median(font_requests) as font," \
+                   "median(other_requests) as other"
+    data = AssetsMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
+    data.to_a
+  end
+
+  def read_requests_points(page, start_date, end_date)
+    select_value = "median(html_requests) as html," \
                   "median(js_requests) as js," \
                   "median(css_requests) as css," \
                   "median(image_requests) as image," \
                   "median(font_requests) as font," \
                   "median(other_requests) as other"
-    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
+    nb_days = (end_date - start_date).to_i / 86400
+    interval = nb_days < 7 ? '1h' : '1d'
+    data = AssetsMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
 
-  def read_requests_points(page, target, start_date, end_date)
-    selectValue = "median(html_requests) as html," \
-                  "median(js_requests) as js," \
-                  "median(css_requests) as css," \
-                  "median(image_requests) as image," \
-                  "median(font_requests) as font," \
-                  "median(other_requests) as other"
-    nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays < 7 ? '1h' : '1d'
-    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+  def read_bytes_summary(page, start_date, end_date)
+    select_value = "median(html_bytes) as html," \
+                   "median(js_bytes) as js," \
+                   "median(css_bytes) as css," \
+                   "median(image_bytes) as image," \
+                   "median(font_bytes) as font," \
+                   "median(other_bytes) as other"
+    data = AssetsMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
     data.to_a
   end
 
-  def read_bytes_summary(page, target, start_date, end_date)
-    selectValue = "median(html_bytes) as html," \
-                  "median(js_bytes) as js," \
-                  "median(css_bytes) as css," \
-                  "median(image_bytes) as image," \
-                  "median(font_bytes) as font," \
-                  "median(other_bytes) as other"
-    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date)
-    data.to_a
-  end
-
-  def read_bytes_points(page, target, start_date, end_date)
-    selectValue = "median(html_bytes) as html," \
-                  "median(js_bytes) as js," \
-                  "median(css_bytes) as css," \
-                  "median(image_bytes) as image," \
-                  "median(font_bytes) as font," \
-                  "median(other_bytes) as other"
-    nbDays = (end_date - start_date).to_i / 86400
-    interval = nbDays < 7 ? '1h' : '1d'
-    data = AssetsMetrics.select(selectValue).by_page(page.id).by_target(target).where(time: start_date..end_date).time(interval).fill(:none)
+  def read_bytes_points(page, start_date, end_date)
+    select_value = "median(html_bytes) as html," \
+                   "median(js_bytes) as js," \
+                   "median(css_bytes) as css," \
+                   "median(image_bytes) as image," \
+                   "median(font_bytes) as font," \
+                   "median(other_bytes) as other"
+    nb_days = (end_date - start_date).to_i / 86400
+    interval = nb_days < 7 ? '1h' : '1d'
+    data = AssetsMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
     data.to_a
   end
 
@@ -117,49 +131,69 @@ class Pages::StatsController < ApplicationController
     result
   end
 
-  def get_performance(page, target, start_date, end_date)
+  def get_lighthouse(page, start_date, end_date)
     result = [
-      {"key" => "response_start", "summary" => 0, "values" => []},
-      {"key" => "first_paint", "summary" => 0, "values" => []},
-      {"key" => "speed_index", "summary" => 0, "values" => []},
-      {"key" => "dom_ready", "summary" => 0, "values" => []},
-      {"key" => "page_load", "summary" => 0, "values" => []}]
-    data = read_performance_summary(page, target, start_date, end_date)
+      {"key" => "pwa", "summary" => 0, "values" => []},
+      {"key" => "performance", "summary" => 0, "values" => []},
+      {"key" => "accessibility", "summary" => 0, "values" => []},
+      {"key" => "best_practices", "summary" => 0, "values" => []}]
+    data = read_lighthouse_summary(page, start_date, end_date)
     if data.length > 0
-      result[0]["summary"] = data[0]["response_start"]
-      result[1]["summary"] = data[0]["first_paint"]
-      result[2]["summary"] = data[0]["speed_index"]
-      result[3]["summary"] = data[0]["dom_ready"]
-      result[4]["summary"] = data[0]["page_load"]
-      points = read_performance_points(page, target, start_date, end_date)
+      result[0]["summary"] = data[0]["pwa"]
+      result[1]["summary"] = data[0]["performance"]
+      result[2]["summary"] = data[0]["accessibility"]
+      result[3]["summary"] = data[0]["best_practices"]
+      points = read_lighthouse_points(page, start_date, end_date)
       points.each do |point|
-        result[0]["values"].push({"time" => point["time"], "value" => point["response_start"]})
-        result[1]["values"].push({"time" => point["time"], "value" => point["first_paint"]})
-        result[2]["values"].push({"time" => point["time"], "value" => point["speed_index"]})
-        result[3]["values"].push({"time" => point["time"], "value" => point["dom_ready"]})
-        result[4]["values"].push({"time" => point["time"], "value" => point["page_load"]})
+        result[0]["values"].push({"time" => point["time"], "value" => point["pwa"].round})
+        result[1]["values"].push({"time" => point["time"], "value" => point["performance"].round})
+        result[2]["values"].push({"time" => point["time"], "value" => point["accessibility"].round})
+        result[3]["values"].push({"time" => point["time"], "value" => point["best_practices"].round})
       end
     end
     result
   end
 
-  def get_requests(page, target, start_date, end_date)
+  def get_performance(page, start_date, end_date)
+    result = [
+      {"key" => "first_byte", "summary" => 0, "values" => []},
+      {"key" => "first_paint", "summary" => 0, "values" => []},
+      {"key" => "speed_index", "summary" => 0, "values" => []},
+      {"key" => "interactive", "summary" => 0, "values" => []}]
+    data = read_performance_summary(page, start_date, end_date)
+    if data.length > 0
+      result[0]["summary"] = data[0]["ttfb"]
+      result[1]["summary"] = data[0]["first_meaningful_paint"]
+      result[2]["summary"] = data[0]["speed_index"]
+      result[3]["summary"] = data[0]["first_interactive"]
+      points = read_performance_points(page, start_date, end_date)
+      points.each do |point|
+        result[0]["values"].push({"time" => point["time"], "value" => point["ttfb"]})
+        result[1]["values"].push({"time" => point["time"], "value" => point["first_meaningful_paint"]})
+        result[2]["values"].push({"time" => point["time"], "value" => point["speed_index"]})
+        result[3]["values"].push({"time" => point["time"], "value" => point["first_interactive"]})
+      end
+    end
+    result
+  end
+
+  def get_requests(page, start_date, end_date)
     result = create_assets_array
-    data = read_requests_summary(page, target, start_date, end_date)
+    data = read_requests_summary(page, start_date, end_date)
     if data.length > 0
       init_assets_summary(result, data)
-      points = read_requests_points(page, target, start_date, end_date)
+      points = read_requests_points(page, start_date, end_date)
       init_assets_points(result, points)
     end
     result
   end
 
-  def get_bytes(page, target, start_date, end_date)
+  def get_bytes(page, start_date, end_date)
     result = create_assets_array
-    data = read_bytes_summary(page, target, start_date, end_date)
+    data = read_bytes_summary(page, start_date, end_date)
     if data.length > 0
       init_assets_summary(result, data)
-      points = read_bytes_points(page, target, start_date, end_date)
+      points = read_bytes_points(page, start_date, end_date)
       init_assets_points(result, points)
     end
     result

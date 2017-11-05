@@ -1,4 +1,4 @@
-class UptimeJob < BaseJob
+class UptimeJob
 
   def self.schedule_next(delay, handler, page_id, second_chance)
     probes = Rails.application.config.probes
@@ -30,7 +30,7 @@ class UptimeJob < BaseJob
           if res.code == "200" && result["status"] == "success"
             UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
             send_up_notification(page) if last == 0
-            Rails.logger.info "Success for #{page.url}"
+            Rails.logger.info "Success uptime for #{page_id} : #{page.url}"
           else
             error_content = result["content"] || "empty"
             if is_second_chance
