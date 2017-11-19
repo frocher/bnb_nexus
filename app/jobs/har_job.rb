@@ -74,7 +74,7 @@ class HarJob
       content = resource["response"]["content"]
       mime_type = find_mime_type(resource["request"]["url"], content["mimeType"])
       data[mime_type + "_requests"] += 1
-      data[mime_type + "_bytes"]    += content["size"]
+      data[mime_type + "_bytes"]    += resource["response"]["_transferSize"]
     end
 
     metric = AssetsMetrics.new page_id: page.id, probe: probe["name"]
