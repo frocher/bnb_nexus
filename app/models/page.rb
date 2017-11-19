@@ -87,17 +87,18 @@ class Page < ActiveRecord::Base
     end
   end
 
-  def uptime_summary(start_date, end_date)
-    data = UptimeMetrics.select("mean(value) as value").by_page(id).where(time: start_date..end_date)
+  def lighthouse_summary(start_date, end_date)
+    select_value = "median(pwa) as pwa," \
+                   "median(performance) as performance," \
+                   "median(accessibility) as accessibility," \
+                   "median(best_practices) as best_practices," \
+                   "median(speed_index) as speed_index"
+    data = LighthouseMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 
-  def performance_summary(start_date, end_date)
-    select_value = "median(ttfb) as ttfb," \
-                   "median(first_meaningful_paint) as first_meaningful_paint," \
-                   "median(first_interactive) as first_interactive," \
-                   "median(speed_index) as speed_index"
-    data = PerformanceMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
+  def uptime_summary(start_date, end_date)
+    data = UptimeMetrics.select("mean(value) as value").by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 

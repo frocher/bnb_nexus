@@ -55,21 +55,24 @@ class WeeklyReportJob
     stats = OpenStruct.new
     stats.name = page.name
 
-    uptime_summary  = page.uptime_summary(start_date, end_date)
-    perf_summary  = page.performance_summary(start_date, end_date)
-    req_summary   = page.requests_summary(start_date, end_date)
-    bytes_summary = page.bytes_summary(start_date, end_date)
+    uptime_summary      = page.uptime_summary(start_date, end_date)
+    lighthouse_summary  = page.lighthouse_summary(start_date, end_date)
+    requests_summary    = page.requests_summary(start_date, end_date)
+    bytes_summary       = page.bytes_summary(start_date, end_date)
 
-    stats.empty = uptime_summary.nil? || perf_summary.nil? || req_summary.nil? || bytes_summary.nil?
+    stats.empty = uptime_summary.nil? || lighthouse_summary.nil? || requests_summary.nil? || bytes_summary.nil?
 
     unless stats.empty
-      stats.uptime       = extract_value(uptime_summary, "value", 0, :*, 100)
-      stats.speed_index  = extract_value(perf_summary, "speed_index", 0)
-      stats.assets_count = sum_assets(req_summary)
-      stats.assets_size  = sum_assets(bytes_summary) / 1024
+      stats.pwa             = extract_value(lighthouse_summary, "pwa", 0)
+      stats.accessibility   = extract_value(lighthouse_summary, "accessibility", 0)
+      stats.performance     = extract_value(lighthouse_summary, "performance", 0)
+      stats.best_practices  = extract_value(lighthouse_summary, "best_practices", 0)
+      stats.uptime          = extract_value(uptime_summary, "value", 0, :*, 100)
+      stats.speed_index     = extract_value(lighthouse_summary, "speed_index", 0)
+      stats.assets_count    = sum_assets(requests_summary)
+      stats.assets_size     = sum_assets(bytes_summary) / 1024
 
       construct_previous(page, stats, start_date, end_date)
-      construct_details(page, stats, start_date, end_date)
     end
 
     stats
@@ -79,9 +82,21 @@ class WeeklyReportJob
     previous_start = start_date - 1.week.to_i
     previous_end = end_date - 1.week.to_i
 
-    previous_perf = page.performance_summary(previous_start, previous_end)
+    previous_lighthouse = page.lighthouse_summary(previous_start, previous_end)
 
-    stats.last_speed_index = extract_value(previous_perf, "speed_index", 0)
+    stats.last_pwa = extract_value(previous_lighthouse, "pwa", 0)
+    stats.pwa_delta = compute_delta(stats.pwa, stats.last_pwa)
+
+    stats.last_accessibility = extract_value(previous_lighthouse, "accessibility", 0)
+    stats.accessibility_delta = compute_delta(stats.accessibility, stats.last_accessibility)
+
+    stats.last_performance = extract_value(previous_lighthouse, "performance", 0)
+    stats.performance_delta = compute_delta(stats.performance, stats.last_performance)
+
+    stats.last_best_practices = extract_value(previous_lighthouse, "best_practices", 0)
+    stats.best_practices_delta = compute_delta(stats.best_practices, stats.last_best_practices)
+
+    stats.last_speed_index = extract_value(previous_lighthouse, "speed_index", 0)
     stats.speed_index_delta = compute_delta(stats.speed_index, stats.last_speed_index)
 
     previous_uptime = page.uptime_summary(previous_start, previous_end)
@@ -103,67 +118,6 @@ class WeeklyReportJob
 
   def compute_delta(new_value, last_value)
     last_value != 0 ? (new_value - last_value) * 100 / last_value : 0
-  end
-
-  def construct_details(page, stats, start_date, end_date)
-    stats.uptimes         = []
-    stats.first_bytes     = []
-    stats.first_paints    = []
-    stats.speed_indexes   = []
-    stats.interactives    = []
-    stats.html_requests   = []
-    stats.js_requests     = []
-    stats.css_requests    = []
-    stats.image_requests  = []
-    stats.font_requests   = []
-    stats.other_requests  = []
-    stats.html_bytes      = []
-    stats.js_bytes        = []
-    stats.css_bytes       = []
-    stats.image_bytes     = []
-    stats.font_bytes      = []
-    stats.other_bytes     = []
-    current_day = start_date
-    while current_day <= end_date
-      construct_uptimes(page, stats, current_day)
-      construct_performances(page, stats, current_day)
-      construct_requests(page, stats, current_day)
-      construct_bytes(page, stats, current_day)
-      current_day += 1.day.to_i
-    end
-  end
-
-  def construct_uptimes(page, stats, current_day)
-    current_uptime = page.uptime_summary(current_day.beginning_of_day, current_day.end_of_day)
-    stats.uptimes << extract_value(current_uptime, "value", "N/A", :*, 100)
-  end
-
-  def construct_performances(page, stats, current_day)
-    current_perf = page.performance_summary(current_day.beginning_of_day, current_day.end_of_day)
-    stats.first_bytes   << extract_value(current_perf, "ttfb", "N/A")
-    stats.first_paints  << extract_value(current_perf, "first_meaningful_paint", "N/A")
-    stats.speed_indexes << extract_value(current_perf, "speed_index", "N/A")
-    stats.interactives  << extract_value(current_perf, "first_interactive", "N/A")
-  end
-
-  def construct_requests(page, stats, current_day)
-    current_req = page.requests_summary(current_day.beginning_of_day, current_day.end_of_day)
-    stats.html_requests  << extract_value(current_req, "html", "N/A")
-    stats.js_requests    << extract_value(current_req, "js", "N/A")
-    stats.css_requests   << extract_value(current_req, "css", "N/A")
-    stats.image_requests << extract_value(current_req, "image", "N/A")
-    stats.font_requests  << extract_value(current_req, "font", "N/A")
-    stats.other_requests << extract_value(current_req, "other", "N/A")
-  end
-
-  def construct_bytes(page, stats, current_day)
-    current_bytes = page.bytes_summary(current_day.beginning_of_day, current_day.end_of_day)
-    stats.html_bytes  << extract_value(current_bytes, "html", "N/A", :/, 1024)
-    stats.js_bytes    << extract_value(current_bytes, "js", "N/A", :/, 1024)
-    stats.css_bytes   << extract_value(current_bytes, "css", "N/A", :/, 1024)
-    stats.image_bytes << extract_value(current_bytes, "image", "N/A", :/, 1024)
-    stats.font_bytes  << extract_value(current_bytes, "font", "N/A", :/, 1024)
-    stats.other_bytes << extract_value(current_bytes, "other", "N/A", :/, 1024)
   end
 
   def extract_value(array, column, default, operator = nil, operand = nil)

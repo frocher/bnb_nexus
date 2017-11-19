@@ -9,13 +9,39 @@ table cellpadding="0" cellspacing="0" border="0" width="100%"
           p style="margin: 0 0 10px;" Not enough data
         - else
           table width="100%"
-            thead
+            tbody
+              tr
+                th align="center" PWA
+                th align="center" Performance
+                th align="center" Accessibility
+                th align="center" Best practices
+              tr.metrics
+                td align="center" = number_with_precision(page.pwa, precision: 0)
+                td align="center" = number_with_precision(page.performance, precision: 0)
+                td align="center" = number_with_precision(page.accessibility, precision: 0)
+                td align="center" = number_with_precision(page.best_practices, precision: 0)
+              tr
+                td align="center"
+                  - unless page.last_pwa.nil?
+                    span style=(page.pwa_delta >= 0 ? 'color:#388e3c;' : 'color:#c62828;') = sprintf('%+-.0f%%', page.pwa_delta)
+                    small = ' (' + page.last_pwa.to_s + ')'
+                td align="center"
+                  - unless page.last_performance.nil?
+                    span style=(page.performance_delta >= 0 ? 'color:#388e3c;' : 'color:#c62828;') = sprintf('%+-.0f%%', page.performance_delta)
+                    small = ' (' + page.last_performance.to_s + ')'
+                td align="center"
+                  - unless page.last_accessibility.nil?
+                    span style=(page.accessibility_delta >= 0 ? 'color:#388e3c;' : 'color:#c62828;') = sprintf('%+-.0f%%', page.accessibility_delta)
+                    small = ' (' + page.last_accessibility.to_s + ')'
+                td align="center"
+                  - unless page.last_best_practices.nil?
+                    span style=(page.best_practices_delta >= 0 ? 'color:#388e3c;' : 'color:#c62828;') = sprintf('%+-.0f%%', page.best_practices_delta)
+                    small = ' (' + page.last_best_practices.to_s + ')'
               tr
                 th align="center" Speed Index
                 th align="center" Uptime
                 th align="center" Assets count
                 th align="center" Assets size
-            tbody
               tr.metrics
                 td align="center" = number_with_precision(page.speed_index, precision: 0)
                 td align="center" = number_to_percentage(page.uptime, precision: 2, strip_insignificant_zeros: true)
@@ -38,85 +64,3 @@ table cellpadding="0" cellspacing="0" border="0" width="100%"
                   - unless page.last_assets_size.nil?
                     span style=(page.assets_size_delta <= 0 ? 'color:#388e3c;' : 'color:#c62828;') = sprintf('%+-.0f%%', page.assets_size_delta)
                     small = sprintf(' (%d Kb)', page.last_assets_size)
-          h3 style="margin-top:20px;margin-bottom:10px;margin-right:4px;margin-left:4px;font-size:16px;border-bottom:1px solid #e0E0E0;" Details
-          table style="font-size:12px" width="100%"
-            thead
-              tr
-                th
-                - current_day = @context.period_start
-                - while current_day < @context.period_end
-                  th align="center" = current_day.strftime("%a %d-%m")
-                  - current_day += 1.day.to_i
-
-            tbody
-              tr style="background-color:#e0e0e0;"
-                td align="center" uptime (%)
-                - page.uptimes.each do |v|
-                  - if v == 'N/A'
-                    td align="center" = v
-                  - else
-                    td align="center" = number_with_precision(v, precision: 2, strip_insignificant_zeros: true)
-              tr
-                td align="center" resp. time (ms)
-                - page.response_times.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" first paint (ms)
-                - page.first_paints.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" speed index
-                - page.speed_indexes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" page load (ms)
-                - page.page_loads.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" html requests
-                - page.html_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" js requests
-                - page.js_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" css requests
-                - page.css_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" image requests
-                - page.image_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" font requests
-                - page.font_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" other requests
-                - page.other_requests.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" html size (Kb)
-                - page.html_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" js size (Kb)
-                - page.js_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" css size (Kb)
-                - page.css_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" image size (Kb)
-                - page.image_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr
-                td align="center" font size (Kb)
-                - page.font_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
-              tr style="background-color:#e0e0e0;"
-                td align="center" other size (Kb)
-                - page.other_bytes.each do |v|
-                  td align="center" = number_with_precision(v, precision: 0)
