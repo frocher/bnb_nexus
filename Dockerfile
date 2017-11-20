@@ -102,7 +102,7 @@ RUN apt-get install -y file imagemagick
 RUN apt-get install -y libxml2-dev libxslt1-dev
 
 # phantomjs
-RUN npm install -g phantomjs-prebuilt
+RUN npm install -g phantomjs-prebuilt --unsafe-perm
 
 ENV APP_HOME /myapp
 RUN mkdir $APP_HOME
