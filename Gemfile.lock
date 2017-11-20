@@ -157,10 +157,10 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
     public_suffix (3.0.1)
-    puma (3.10.0)
+    puma (3.11.0)
     rack (2.0.3)
     rack-cors (1.0.2)
-    rack-test (0.7.1)
+    rack-test (0.8.0)
       rack (>= 1.0, < 3)
     rails (5.1.4)
       actioncable (= 5.1.4)
@@ -260,4 +260,4 @@ DEPENDENCIES
   validate_url
 
 BUNDLED WITH
-   1.15.3
+   1.16.0
