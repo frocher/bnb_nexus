@@ -8,7 +8,6 @@ You'll need the following software to make the Nexus run on your system:
 
 * Node.js
 * Ruby >= 2.3
-* [PhantomJS](http://www.http://phantomjs.org/)
 * [InfluxDB](https://influxdata.com/time-series-platform/influxdb/)
 * [MySQL](https://www.mysql.com)
 * a SMTP server
