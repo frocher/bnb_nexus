@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160812173512) do
+ActiveRecord::Schema.define(version: 20171231164927) do
 
   create_table "identities", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "provider", null: false
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20160812173512) do
     t.string "slack_channel"
     t.boolean "mail_notify", default: true
     t.boolean "slack_notify", default: false
+    t.integer "uptime_status", default: 1
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

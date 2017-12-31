@@ -23,7 +23,7 @@ class HarJob
   end
 
   def perform(page, probe)
-    if page.last_uptime_value == 0
+    if page.uptime_status == 0
       Rails.logger.info "Har job not done because #{page.url} is down"
       return
     end

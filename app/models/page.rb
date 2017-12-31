@@ -44,15 +44,7 @@ class Page < ActiveRecord::Base
   validates :slack_channel, presence: true, if: Proc.new { |a| a.slack_notify? }
 
   def as_json(options={})
-    h = super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :slack_webhook, :slack_channel, :created_at, :updated_at]}.merge(options || {}))
-    h[:uptime_status] = last_uptime_value
-    h
-  end
-
-  def last_uptime_value
-    result = UptimeMetrics.select("last(value) as value").by_page(id)
-    records = result.load
-    records.empty? ? -1 : records[0]["value"]
+    super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :slack_webhook, :slack_channel, :uptime_status, :created_at, :updated_at]}.merge(options || {}))
   end
 
   def last_downtime_duration

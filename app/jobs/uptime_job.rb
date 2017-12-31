@@ -26,15 +26,19 @@ class UptimeJob
         begin
           res = launch_probe(probe, page)
           result = JSON.parse(res.body)
-          last = page.last_uptime_value
+          last = page.uptime_status
           if res.code == "200" && result["status"] == "success"
             UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
+            page.uptime_status = 1
+            page.save!
             send_up_notification(page) if last == 0
             Rails.logger.info "Success uptime for #{page_id} : #{page.url}"
           else
             error_content = result["content"] || "empty"
             if is_second_chance
               UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+              page.uptime_status = 0
+              page.save!
               send_down_notification(page, result["errorMessage"]) if last == 1
             else
               second_chance = true
