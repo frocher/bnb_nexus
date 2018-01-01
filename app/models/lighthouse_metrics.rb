@@ -1,7 +1,7 @@
 class LighthouseMetrics < Influxer::Metrics
   set_series :lighthouse
   tags :page_id, :probe, :time_key
-  attributes :pwa, :performance, :accessibility, :best_practices,
+  attributes :pwa, :performance, :accessibility, :best_practices, :seo,
              :ttfb, :first_meaningful_paint, :first_interactive, :speed_index
 
   scope :by_page, -> (id) { where(page_id: id) if id.present? }
@@ -13,6 +13,7 @@ class LighthouseMetrics < Influxer::Metrics
     self.performance = self.performance.round(0)
     self.accessibility = self.accessibility.round(0)
     self.best_practices = self.best_practices.round(0)
+    self.seo = self.seo.round(0)
     self.ttfb = self.ttfb.round(0)
     self.first_meaningful_paint = self.first_meaningful_paint.round(0)
     self.first_interactive = self.first_interactive.round(0)

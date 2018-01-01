@@ -67,6 +67,7 @@ class WeeklyReportJob
       stats.accessibility   = extract_value(lighthouse_summary, "accessibility", 0)
       stats.performance     = extract_value(lighthouse_summary, "performance", 0)
       stats.best_practices  = extract_value(lighthouse_summary, "best_practices", 0)
+      stats.seo             = extract_value(lighthouse_summary, "seo", 0)
       stats.uptime          = extract_value(uptime_summary, "value", 0, :*, 100)
       stats.speed_index     = extract_value(lighthouse_summary, "speed_index", 0)
       stats.assets_count    = sum_assets(requests_summary)
@@ -95,6 +96,9 @@ class WeeklyReportJob
 
     stats.last_best_practices = extract_value(previous_lighthouse, "best_practices", 0)
     stats.best_practices_delta = compute_delta(stats.best_practices, stats.last_best_practices)
+
+    stats.last_seo = extract_value(previous_lighthouse, "seo", 0)
+    stats.seo_delta = compute_delta(stats.seo, stats.last_seo)
 
     stats.last_speed_index = extract_value(previous_lighthouse, "speed_index", 0)
     stats.speed_index_delta = compute_delta(stats.speed_index, stats.last_speed_index)

@@ -65,6 +65,7 @@ class LighthouseJob
     metric.performance    = values[1]
     metric.accessibility  = values[2]
     metric.best_practices = values[3]
+    metric.seo            = values[4]
 
     values = metrics.split(";").map(&:to_f)
     metric.ttfb                   = values[0]

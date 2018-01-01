@@ -34,7 +34,8 @@ class Pages::StatsController < ApplicationController
     select_value = "median(pwa) as pwa," \
                    "median(performance) as performance," \
                    "median(accessibility) as accessibility," \
-                   "median(best_practices) as best_practices"
+                   "median(best_practices) as best_practices," \
+                   "median(seo) as seo"
     data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
     data.to_a
   end
@@ -43,8 +44,8 @@ class Pages::StatsController < ApplicationController
     select_value = "mean(pwa) as pwa," \
                    "mean(performance) as performance," \
                    "mean(accessibility) as accessibility," \
-                   "mean(best_practices) as best_practices"
-
+                   "mean(best_practices) as best_practices," \
+                   "mean(seo) as seo"
     nb_days = (end_date - start_date).to_i / 86400
     interval = nb_days < 7 ? '1h' : '1d'
     data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date).time(interval).fill(:none)
@@ -136,19 +137,22 @@ class Pages::StatsController < ApplicationController
       {"key" => "pwa", "summary" => 0, "values" => []},
       {"key" => "performance", "summary" => 0, "values" => []},
       {"key" => "accessibility", "summary" => 0, "values" => []},
-      {"key" => "best_practices", "summary" => 0, "values" => []}]
+      {"key" => "best_practices", "summary" => 0, "values" => []},
+      {"key" => "seo", "summary" => 0, "values" => []}]
     data = read_lighthouse_summary(page, start_date, end_date)
     if data.length > 0
       result[0]["summary"] = data[0]["pwa"]
       result[1]["summary"] = data[0]["performance"]
       result[2]["summary"] = data[0]["accessibility"]
       result[3]["summary"] = data[0]["best_practices"]
+      result[4]["summary"] = data[0]["seo"]
       points = read_lighthouse_points(page, start_date, end_date)
       points.each do |point|
         result[0]["values"].push({"time" => point["time"], "value" => point["pwa"].round})
         result[1]["values"].push({"time" => point["time"], "value" => point["performance"].round})
         result[2]["values"].push({"time" => point["time"], "value" => point["accessibility"].round})
         result[3]["values"].push({"time" => point["time"], "value" => point["best_practices"].round})
+        result[4]["values"].push({"time" => point["time"], "value" => point["seo"].round})
       end
     end
     result
