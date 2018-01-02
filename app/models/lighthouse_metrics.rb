@@ -1,3 +1,5 @@
+require "zlib"
+
 class LighthouseMetrics < Influxer::Metrics
   set_series :lighthouse
   tags :page_id, :probe, :time_key

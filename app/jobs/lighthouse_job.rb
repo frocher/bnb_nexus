@@ -1,5 +1,3 @@
-require "zlib"
-
 class LighthouseJob
 
   def self.schedule_next(delay, handler, page_id)
