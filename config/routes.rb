@@ -11,4 +11,5 @@ Rails.application.routes.draw do
     end
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
+  get "/pages/:id/lighthouse/:key" => "pages#lighthouse"
 end

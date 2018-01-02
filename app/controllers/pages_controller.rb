@@ -20,7 +20,7 @@
 #
 
 class PagesController < ApplicationController
-  before_action :authenticate_user!, except: [:screenshot]
+  before_action :authenticate_user!, except: [:screenshot, :lighthouse]
   before_action :set_page, only: [:show, :update, :destroy]
 
   def index
@@ -109,6 +109,11 @@ class PagesController < ApplicationController
     send_data data, type: 'image/png', disposition: 'inline'
   end
 
+  def lighthouse
+    @page = Page.find(params[:id])
+    metric = LighthouseMetrics.new page_id: @page.id, time_key: params[:key]
+    render html: metric.read_report.html_safe
+  end
 
 private
 

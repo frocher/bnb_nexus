@@ -7,6 +7,7 @@ class LighthouseMetrics < Influxer::Metrics
              :ttfb, :first_meaningful_paint, :first_interactive, :speed_index
 
   scope :by_page, -> (id) { where(page_id: id) if id.present? }
+  scope :by_time_key, -> (key) { where(time_key: key) if key.present? }
 
   before_write :round_data
 
@@ -30,5 +31,16 @@ class LighthouseMetrics < Influxer::Metrics
       gz.write result
       gz.close
     end
+  end
+
+  def read_report
+    result = nil
+    path = File.join(Rails.root, "reports/lighthouse", page_id.to_s)
+    File.open(File.join(path, time_key + ".html.gz")) do |f|
+      gz = Zlib::GzipReader.new(f)
+      result = gz.read
+      gz.close
+    end
+    result
   end
 end
