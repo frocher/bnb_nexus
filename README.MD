@@ -72,7 +72,6 @@ An application.yml.sample file is included in the config directory.
 | --------|:---------:| -----|
 | GOOGLE_ANALYTICS_KEY | none | if you want to track usage statistics |
 | MAILER_SENDER | jeeves.thebot@botnbot.com | Mail sender |
-| SPARKPOST_API_KEY | none | Botnbot currently uses Sparkpost to send emails. If you want to use smtp replace :sparkpost by :smtp for config.action_mailer.delivery_method |
 
 ### MySQL Configuration
 

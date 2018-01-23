@@ -9,7 +9,6 @@ class UserMailer < ApplicationMailer
 
   def weekly_summary(user, title, context)
     @context = context
-    data = { html_content_only: true }
-    mail(to: user.email, subject: title, sparkpost_data: data)
+    mail(to: user.email, subject: title)
   end
 end

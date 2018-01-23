@@ -10,9 +10,6 @@ probes: '[{ "name": "mylocalhost", "host":"localhost", "port":3333, "token": "my
 # You can add a google analytics key if you want user tracking
 #GOOGLE_ANALYTICS_KEY: "UA-something"
 
-# Sparkpost key used to send emails
-SPARKPOST_API_KEY: <Your sparkpost api>
-
 # Omniauth keys and secrets
 FACEBOOK_KEY: <Your facebook key>
 FACEBOOK_SECRET: <Your facebook secret>
