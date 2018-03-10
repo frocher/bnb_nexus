@@ -1,4 +1,4 @@
-class HarJob
+class HarJob < StatisticsJob
 
   def self.schedule_next(delay, handler, page_id)
     probes = Rails.application.config.probes
@@ -33,6 +33,7 @@ class HarJob
       if res.is_a?(Net::HTTPSuccess)
         result = JSON.parse(res.body)
         metric = write_metrics(probe, page, result)
+        metric.write_har(res.body)
         Rails.logger.info "Success har for #{page.id} : #{page.url}"
       else
         Rails.logger.error "Error har #{res.code} for #{page.id} : #{page.url}"
@@ -45,12 +46,7 @@ class HarJob
 
   def launch_probe(probe, page)
     uri = URI.parse("http://#{probe['host']}:#{probe['port']}/har?url=#{page.url}&token=#{probe['token']}")
-    request = Net::HTTP::Get.new(uri.request_uri)
-    response = Net::HTTP.start(uri.host, uri.port) do |http|
-      http.read_timeout = 120
-      http.request(request)
-    end
-    response
+    send_request(uri)
   end
 
   def write_metrics(probe, page, result)
@@ -78,7 +74,7 @@ class HarJob
     end
 
     metric = AssetsMetrics.new page_id: page.id, probe: probe["name"]
-    metric.time_key = Time.now.strftime("%Y%m%d%H%M%S")
+    metric.time_key = generate_time_key
     metric.html_requests  = data["html_requests"]
     metric.js_requests    = data["js_requests"]
     metric.css_requests   = data["css_requests"]

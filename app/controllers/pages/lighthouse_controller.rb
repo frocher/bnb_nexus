@@ -17,7 +17,8 @@ class Pages::LighthouseController < ApplicationController
   end
 
   def get_lighthouse(page, start_date, end_date)
-    select_value = "pwa,performance,accessibility,best_practices,seo"
+    select_value = "time_key, pwa, performance, accessibility, best_practices, seo"
+    select_value += ", ttfb, first_meaningful_paint, first_interactive, speed_index"
     data = LighthouseMetrics.select(select_value).by_page(page.id).where(time: start_date..end_date)
     data.to_a
   end    

@@ -1,4 +1,4 @@
-class LighthouseJob
+class LighthouseJob < StatisticsJob
 
   def self.schedule_next(delay, handler, page_id)
     probes = Rails.application.config.probes
@@ -46,17 +46,12 @@ class LighthouseJob
 
   def launch_probe(probe, page, type)
     uri = URI.parse("http://#{probe['host']}:#{probe['port']}/lighthouse?url=#{page.url}&type=#{type}&token=#{probe['token']}")
-    request = Net::HTTP::Get.new(uri.request_uri)
-    response = Net::HTTP.start(uri.host, uri.port) do |http|
-      http.read_timeout = 120
-      http.request(request)
-    end
-    response
+    send_request(uri)
   end
 
   def write_metrics(probe, page, scores, metrics)
     metric = LighthouseMetrics.new page_id: page.id, probe: probe["name"]
-    metric.time_key = Time.now.strftime("%Y%m%d%H%M%S")
+    metric.time_key = generate_time_key
 
     values = scores.split(";").map(&:to_f)
     metric.pwa            = values[0]

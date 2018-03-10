@@ -1,4 +1,4 @@
-class UptimeJob
+class UptimeJob < StatisticsJob
 
   def self.schedule_next(delay, handler, page_id, second_chance)
     probes = Rails.application.config.probes
@@ -28,7 +28,7 @@ class UptimeJob
           result = JSON.parse(res.body)
           last = page.uptime_status
           if res.code == "200" && result["status"] == "success"
-            UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 1)
+            write_metrics(probe["name"], page, 1, res.code, nil, nil)
             page.uptime_status = 1
             page.save!
             send_up_notification(page) if last == 0
@@ -36,7 +36,7 @@ class UptimeJob
           else
             error_content = result["content"] || "empty"
             if is_second_chance
-              UptimeMetrics.write!(page_id: page_id, probe: probe["name"], value: 0, error_code: res.code, error_message: result["errorMessage"], error_content: error_content)
+              write_metrics(probe["name"], page, 0, res.code, result["errorMessage"], error_content)
               page.uptime_status = 0
               page.save!
               send_down_notification(page, result["errorMessage"]) if last == 1
@@ -67,6 +67,18 @@ class UptimeJob
   end
 
   private
+
+  def write_metrics(probe, page, status, code, message, content)
+    metric = UptimeMetrics.new page_id: page.id, probe: probe["name"]
+    if !content.nil?
+      metric.time_key = generate_time_key
+      metric.write_content(content)
+    end
+    metric.value = status
+    metric.error_code = code if !code.nil?
+    metric.error_message = message if !message.nil?
+    metric.write!
+  end
 
   def send_up_notification(page)
     duration = page.last_downtime_duration

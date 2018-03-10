@@ -6,9 +6,11 @@ Rails.application.routes.draw do
 
   resources :pages do
     scope module: :pages do
-      resources :stats, only: [:index]
+      resources :assets, only: [:index, :show]
       resources :lighthouse, only: [:index, :show]
       resources :members, except: :show
+      resources :stats, only: [:index]
+      resources :uptime, only: [:index, :show]
     end
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
