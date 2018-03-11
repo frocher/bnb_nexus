@@ -17,7 +17,9 @@ class ScreenshotJob
     begin
       res = launch_probe(probe, page)
       if res.is_a?(Net::HTTPSuccess)
-        output_path = File.join(Rails.root, "reports/screenshots", page.id.to_s, "original", page.id.to_s + ".png")
+        path = File.join(Rails.root, "reports/screenshots", page.id.to_s, "original")
+        FileUtils.mkdir_p(path) unless File.exist?(path)
+        output_path = File.join(path, page.id.to_s + ".png")
         file = File.open(output_path, "wb")
         file.write(res.body)
         page.screenshot = file
