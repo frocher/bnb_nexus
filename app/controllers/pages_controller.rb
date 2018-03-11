@@ -50,6 +50,7 @@ class PagesController < ApplicationController
 
         @page.name = params[:name]
         @page.url = params[:url]
+        @page.uptime_status = 1
         @page.uptime_keyword = ""
         @page.uptime_keyword_type = "presence"
         @page.mail_notify = true
