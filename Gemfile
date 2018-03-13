@@ -20,7 +20,7 @@ gem 'validate_url'
 gem 'kaminari'
 
 # Files attachments
-gem 'paperclip'
+gem 'paperclip', '>= 5.2.1'
 
 # Notifications (mail, slack)
 gem 'slack-notifier'
