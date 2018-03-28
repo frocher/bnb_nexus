@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.2'
+gem 'rails', '~> 5.1.4'
 
 gem 'rack-cors', :require => 'rack/cors'
 
@@ -17,10 +17,10 @@ gem 'influxer'
 gem 'validate_url'
 
 # Pagination
-gem 'kaminari'
+gem 'kaminari', '>= 1.1.1'
 
 # Files attachments
-gem 'paperclip'
+gem 'paperclip', '>= 5.2.1'
 
 # Notifications (mail, slack)
 gem 'slack-notifier'
