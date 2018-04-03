@@ -62,5 +62,5 @@ Rails.application.configure do
   config.x.jobs.lighthouse_interval = "15m"
   config.x.jobs.uptime_interval = "2m"
   config.x.jobs.second_chanche_interval = "15s"
-  config.x.jobs.screenshot_interval = "2m"
+  config.x.jobs.screenshot_interval = "15m"
 end

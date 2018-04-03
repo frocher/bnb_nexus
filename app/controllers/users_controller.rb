@@ -48,6 +48,25 @@ class UsersController < ApplicationController
     render json: {errors: @user.errors}, status: 422
   end
 
+  def save_subscription
+    return not_found! unless can?(current_user, :update_user, @user)
+
+    if (!params[:subscription])
+      render json: {message: "Subscription must have an endpoint."}, status: 400
+    else
+      hash = JSON.parse(params[:subscription])
+
+      @subscription = Subscription.new
+      @subscription.endpoint = hash["endpoint"]
+      @subscription.p256dh = hash["keys"]["p256dh"]
+      @subscription.auth = hash["keys"]["auth"]
+      @subscription.user = @user
+      @subscription.save!
+
+      render json: @subscription
+    end
+  end
+
   private
 
   def set_user

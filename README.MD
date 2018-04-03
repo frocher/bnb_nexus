@@ -103,3 +103,11 @@ An application.yml.sample file is included in the config directory.
 | GITHUB_SECRET | none | github secret for omniauth |
 | GOOGLE_KEY | none | google key for omniauth |
 | GOOGLE_SECRET | none | google secret for omniauth |
+
+### Push notifications Configuration
+
+| Name    | Default Value | Description  |
+| --------|:---------:| -----|
+| PUSH_SUBJECT | none | vapid subject |
+| PUSH_PUBLIC_KEY | none | vapid public key |
+| PUSH_PRIVATE_KEY | none | vapid private key |

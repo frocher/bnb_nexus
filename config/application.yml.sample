@@ -22,3 +22,8 @@ GOOGLE_SECRET: <Your google secret>
 INFLUXDB_DATABASE: botnbot
 INFLUXDB_USER: root
 INFLUXDB_PASSWORD: root
+
+# Push notification keys : use https://web-push-codelab.glitch.me/ for push notification keys
+PUSH_SUBJECT:
+PUSH_PUBLIC_KEY:
+PUSH_PRIVATE_KEY:

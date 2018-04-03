@@ -85,6 +85,9 @@ class UptimeJob < StatisticsJob
     if page.mail_notify
       send_up_mail(page, duration)
     end
+    if page.push_notify
+      send_push_message(page, "The page #{page.url} is up again after a downtime of #{duration}.")
+    end
     if page.slack_notify
       send_slack_message(page, "The page #{page.url} is up again after a downtime of #{duration}.")
     end
@@ -93,6 +96,9 @@ class UptimeJob < StatisticsJob
   def send_down_notification(page, error_message)
     if page.mail_notify
       send_down_mail(page, error_message)
+    end
+    if page.push_notify
+      send_push_message(page, "The page #{page.url} is down : #{error_message}")
     end
     if page.slack_notify
       send_slack_message(page, "The page #{page.url} is down : #{error_message}")
@@ -117,6 +123,43 @@ class UptimeJob < StatisticsJob
   rescue Exception => e
     Rails.logger.error e.to_s
     e.backtrace.each { |line| Rails.logger.error line }
+  end
+
+  def send_push_message(page, message)
+    page.page_members.each do |member|
+      user = member.user
+      user.subscriptions.each do |subscription|
+        send_webpush(subscription, message)
+      end
+    end
+  rescue Exception => e
+    Rails.logger.error e.to_s
+  end
+
+  def send_webpush(subscription, text)
+    message = {
+      title: "Message Received from Botnbot",
+      options: {
+        body: text
+      }
+    }
+
+    Webpush.payload_send(
+      message: JSON.generate(message),
+      endpoint: subscription.endpoint,
+      p256dh: subscription.p256dh,
+      auth: subscription.auth,
+      vapid: {
+        subject: Figaro.env.push_subject,
+        public_key: Figaro.env.push_public_key,
+        private_key: Figaro.env.push_private_key
+      }
+    )
+  rescue Webpush::InvalidSubscription => e
+    subscription.destroy
+    Rails.logger.error e.to_s
+  rescue Exception => e
+    Rails.logger.error e.to_s
   end
 
   def send_slack_message(page, message)

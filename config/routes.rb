@@ -14,4 +14,5 @@ Rails.application.routes.draw do
     end
   end
   get "/pages/:id/screenshot" => "pages#screenshot"
+  post "/users/:id/save-subscription" => "users#save_subscription"
 end

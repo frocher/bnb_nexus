@@ -39,6 +39,9 @@ gem 'six'
 # Configuration
 gem 'figaro'
 
+# Push notifications
+gem 'webpush'
+
 # Cron jobs
 gem 'rufus-scheduler'
 

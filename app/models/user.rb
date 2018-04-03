@@ -39,7 +39,8 @@ class User < ActiveRecord::Base
 
   has_many :page_members, dependent: :destroy
   has_many :pages, through: :page_members
-  has_many :identities
+  has_many :identities, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 
   # Scopes
   scope :admins, -> { where(admin: true) }

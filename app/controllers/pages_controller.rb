@@ -54,6 +54,7 @@ class PagesController < ApplicationController
         @page.uptime_keyword = ""
         @page.uptime_keyword_type = "presence"
         @page.mail_notify = true
+        @page.push_notify = true
         @page.slack_notify = false
         @page.slack_webhook = ""
         @page.slack_channel = ""
@@ -80,6 +81,7 @@ class PagesController < ApplicationController
     @page.uptime_keyword = params[:uptime_keyword]
     @page.uptime_keyword_type = params[:uptime_keyword_type]
     @page.mail_notify = params[:mail_notify] || true
+    @page.push_notify = params[:push_notify] || true
     @page.slack_notify = params[:slack_notify] || false
     @page.slack_webhook = params[:slack_webhook] || ""
     @page.slack_channel = params[:slack_channel] || ""
