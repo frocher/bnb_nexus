@@ -33,6 +33,7 @@ class Page < ActiveRecord::Base
       medium: '-resize "1024x" +repage -crop "1024x240+0+0" -gravity North'
     }
 
+  has_many :budgets, dependent: :destroy
   has_many :page_members, dependent: :destroy
 
   #

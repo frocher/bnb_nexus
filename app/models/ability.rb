@@ -53,6 +53,7 @@ class Ability
     def page_guest_rules
       [
         :read_page,
+        :read_budget,
         :read_page_member,
         :leave_page
       ]
@@ -60,7 +61,9 @@ class Ability
 
     def page_editor_rules
       page_guest_rules + [
-        :update_page
+        :update_page,
+        :create_budget,
+        :delete_budget,
       ]
     end
 

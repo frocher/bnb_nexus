@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     scope module: :pages do
       resources :assets, only: [:index, :show]
       resources :lighthouse, only: [:index, :show]
+      resources :budgets, only: [:index, :create, :destroy]
       resources :members, except: :show
       resources :stats, only: [:index]
       resources :uptime, only: [:index, :show]
