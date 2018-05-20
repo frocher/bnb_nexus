@@ -34,12 +34,6 @@ class PagesController < ApplicationController
 
   def show
     return not_found! unless can?(current_user, :read_page, @page)
-    can_edit  = can?(current_user, :update_page, @page)
-    can_delete = can?(current_user, :delete_page, @page)
-    can_add_member = can?(current_user, :create_page_member, @page)
-    can_update_member = can?(current_user, :update_page_member, @page)
-    can_remove_member = can?(current_user, :delete_page_member, @page)
-
     render_page
   end
 
@@ -120,13 +114,17 @@ private
     can_add_member = can?(current_user, :create_page_member, @page)
     can_update_member = can?(current_user, :update_page_member, @page)
     can_remove_member = can?(current_user, :delete_page_member, @page)
+    can_create_budget = can?(current_user, :create_budget, @page)
+    can_delete_budget = can?(current_user, :delete_budget, @page)
 
     render json: @page.as_json().merge({
       can_edit: can_edit,
       can_delete: can_delete,
       can_add_member: can_add_member,
       can_update_member: can_update_member,
-      can_remove_member: can_remove_member})
+      can_remove_member: can_remove_member,
+      can_create_budget: can_create_budget,
+      can_delete_budget: can_delete_budget})
   end
 
   def set_page
