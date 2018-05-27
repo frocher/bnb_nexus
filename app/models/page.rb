@@ -87,6 +87,9 @@ class Page < ActiveRecord::Base
                    "median(accessibility) as accessibility," \
                    "median(best_practices) as best_practices," \
                    "median(seo) as seo," \
+                   "median(ttfb) as ttfb," \
+                   "median(first_meaningful_paint) as first_meaningful_paint," \
+                   "median(first_interactive) as first_interactive," \
                    "median(speed_index) as speed_index"
     data = LighthouseMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)

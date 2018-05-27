@@ -11,4 +11,9 @@ class UserMailer < ApplicationMailer
     @context = context
     mail(to: user.email, subject: title)
   end
+
+  def budget(user, title, context)
+    @context = context
+    mail(to: user.email, subject: title)
+  end
 end
