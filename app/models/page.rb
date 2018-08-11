@@ -28,9 +28,9 @@ class Page < ActiveRecord::Base
   has_attached_file :screenshot,
     path: ":rails_root/reports/screenshots/:id/:style/:filename",
     default_url: "/images/:style/missing.png",
-    styles: { medium: "", thumb: "320x240#" },
+    styles: { thumb: "320x240#" },
     convert_options: {
-      medium: '-resize "1024x" +repage -crop "1024x240+0+0" -gravity North'
+      thumb: "-quality 75 -strip"
     }
 
   has_many :budgets, dependent: :destroy
