@@ -3,5 +3,5 @@ sudo: required
 services:
   - docker
 
-  before_install:
+before_install:
   - docker build -t frocher/bnb_nexus .
