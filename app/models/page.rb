@@ -28,7 +28,7 @@ class Page < ActiveRecord::Base
   has_attached_file :screenshot,
     path: ":rails_root/reports/screenshots/:id/:style/:filename",
     default_url: "/images/:style/missing.png",
-    styles: { thumb: "320x240#" },
+    styles: { thumb: "360x270#" },
     convert_options: {
       thumb: "-quality 75 -strip"
     }
