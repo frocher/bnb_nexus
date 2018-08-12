@@ -86,9 +86,9 @@ Rails.application.configure do
   config.x.jobs.screenshot_start = 60
 
   # Jobs intervals
-  config.x.jobs.har_interval = "6h"
-  config.x.jobs.lighthouse_interval = "6h"
+  config.x.jobs.har_interval = "7h"
+  config.x.jobs.lighthouse_interval = "7h"
   config.x.jobs.uptime_interval = "10m"
   config.x.jobs.second_chanche_interval = "30s"
-  config.x.jobs.screenshot_interval = "4h"
+  config.x.jobs.screenshot_interval = "5h"
 end
