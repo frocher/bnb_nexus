@@ -5,6 +5,12 @@ table cellpadding="0" cellspacing="0" border="0" width="100%"
       ul
         - @context.budgets.each do |budget|
           - if budget.delta > 0
-            li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was #{budget.before_value} and is now #{budget.value} (#{budget.delta}% increase)."
+            - if budget.news == 'bad'
+              li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was <span style='color:green'>#{budget.before_value}</span> and is now <span style='color:red'>#{budget.value}</span> (#{budget.delta}% increase)."
+            - else
+              li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was <span style='color:red'>#{budget.before_value}</span> and is now <span style='color:green'>#{budget.value}</span> (#{budget.delta}% increase)."
           - else
-            li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was #{budget.before_value} and is now #{budget.value} (#{-budget.delta}% decrease)."
+            - if budget.news == 'bad'
+              li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was <span style='color:green'>#{budget.before_value}</span> and is now <span style='color:red'>#{budget.value}</span> (#{-budget.delta}% decrease)."
+            - else
+              li = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was <span style='color:red'>#{budget.before_value}</span> and is now <span style='color:green'>#{budget.value}</span> (#{-budget.delta}% decrease)."
