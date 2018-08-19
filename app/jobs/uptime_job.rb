@@ -129,18 +129,19 @@ class UptimeJob < StatisticsJob
     page.page_members.each do |member|
       user = member.user
       user.subscriptions.each do |subscription|
-        send_webpush(subscription, message)
+        send_webpush(subscription, page.url, message)
       end
     end
   rescue Exception => e
     Rails.logger.error e.to_s
   end
 
-  def send_webpush(subscription, text)
+  def send_webpush(subscription, url, text)
     message = {
       title: "Message Received from Botnbot",
       options: {
-        body: text
+        body: text,
+        url: url
       }
     }
 
