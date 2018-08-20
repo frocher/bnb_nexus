@@ -139,9 +139,9 @@ class UptimeJob < StatisticsJob
   def send_webpush(subscription, url, text)
     message = {
       title: "Message Received from Botnbot",
-      data: { url: url },
       options: {
-        body: text
+        body: text,
+        data: { url: url }
       }
     }
 
