@@ -5,16 +5,16 @@ table(cellpadding="0" cellspacing="0" border="0" width="100%")
       ul
         - @context.budgets.each do |budget|
           li
-            = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was"
+            = "#{budget.page}/#{budget.label} (budget: #{budget.budget}) was "
             - if budget.news == "bad"
               span(style="color:green") = budget.before_value
-              = "and is now"
+              = " and is now "
               span(style="color:red") = budget.value
             - else
               span(style="color:red") = budget.before_value
-              = "and is now"
+              = " and is now "
               span(style="color:green") = budget.value
             - if budget.delta > 0
-              = "(#{budget.delta}% increase)."
+              = " (#{budget.delta}% increase)."
             - else
-              = "(#{-budget.delta}% decrease)."
+              = " (#{-budget.delta}% decrease)."
