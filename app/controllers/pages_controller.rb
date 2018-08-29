@@ -103,7 +103,7 @@ class PagesController < ApplicationController
     path = File.join(Rails.root, 'public', 'screenshot.png')
     path = @page.screenshot.path(style) if @page.screenshot.exists?
     data = File.read(path)
-    send_data data, type: 'image/png', disposition: 'inline'
+    send_data data, type: 'image/jpeg', disposition: 'inline'
   end
 
 private
