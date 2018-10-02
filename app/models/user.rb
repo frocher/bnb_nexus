@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
       if identity
         user = identity.user
       else
-        user = User.find_by(email: auth.info.email) || User.create(email: auth.info.email, password: Devise.friendly_token[0,20], name: (auth.info.name || auth.info.full_name).to_s)
+        user = User.find_by(email: auth.info.email) || User.create!(email: auth.info.email, password: Devise.friendly_token[0,20], name: (auth.info.name || auth.info.full_name).to_s)
         identity = Identity.create(provider: auth.provider, uid: auth.uid, user: user)
       end
       user
