@@ -129,9 +129,9 @@ class WeeklyReportJob
       default
     else
       if operator.nil?
-        array[column]
+        array[column].round(1)
       else
-        array[column].send(operator, operand)
+        array[column].send(operator, operand).round(1)
       end
     end
   end
