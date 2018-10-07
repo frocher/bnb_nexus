@@ -70,7 +70,7 @@ class UptimeJob < StatisticsJob
 
   def write_metrics(probe, page, status, code, message, content)
     metric = UptimeMetrics.new page_id: page.id, probe: probe["name"]
-    if !content.nil?
+    if !content.nil? && content.length < 300000
       metric.time_key = generate_time_key
       metric.write_content(content)
     end
