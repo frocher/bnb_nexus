@@ -82,15 +82,15 @@ class Page < ActiveRecord::Base
   end
 
   def lighthouse_summary(start_date, end_date)
-    select_value = "median(pwa) as pwa," \
-                   "median(performance) as performance," \
-                   "median(accessibility) as accessibility," \
-                   "median(best_practices) as best_practices," \
-                   "median(seo) as seo," \
-                   "median(ttfb) as ttfb," \
-                   "median(first_meaningful_paint) as first_meaningful_paint," \
-                   "median(first_interactive) as first_interactive," \
-                   "median(speed_index) as speed_index"
+    select_value = "mean(pwa) as pwa," \
+                   "mean(performance) as performance," \
+                   "mean(accessibility) as accessibility," \
+                   "mean(best_practices) as best_practices," \
+                   "mean(seo) as seo," \
+                   "mean(ttfb) as ttfb," \
+                   "mean(first_meaningful_paint) as first_meaningful_paint," \
+                   "mean(first_interactive) as first_interactive," \
+                   "mean(speed_index) as speed_index"
     data = LighthouseMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
@@ -101,23 +101,23 @@ class Page < ActiveRecord::Base
   end
 
   def requests_summary(start_date, end_date)
-    select_value = "median(html_requests) as html," \
-                   "median(js_requests) as js," \
-                   "median(css_requests) as css," \
-                   "median(image_requests) as image," \
-                   "median(font_requests) as font," \
-                   "median(other_requests) as other"
+    select_value = "mean(html_requests) as html," \
+                   "mean(js_requests) as js," \
+                   "mean(css_requests) as css," \
+                   "mean(image_requests) as image," \
+                   "mean(font_requests) as font," \
+                   "mean(other_requests) as other"
     data = AssetsMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
 
   def bytes_summary(start_date, end_date)
-    select_value = "median(html_bytes) as html," \
-                   "median(js_bytes) as js," \
-                   "median(css_bytes) as css," \
-                   "median(image_bytes) as image," \
-                   "median(font_bytes) as font," \
-                   "median(other_bytes) as other"
+    select_value = "mean(html_bytes) as html," \
+                   "mean(js_bytes) as js," \
+                   "mean(css_bytes) as css," \
+                   "mean(image_bytes) as image," \
+                   "mean(font_bytes) as font," \
+                   "mean(other_bytes) as other"
     data = AssetsMetrics.select(select_value).by_page(id).where(time: start_date..end_date)
     convert_influx_result(data)
   end
