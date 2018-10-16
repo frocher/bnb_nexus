@@ -45,7 +45,7 @@ class LighthouseJob < StatisticsJob
   end
 
   def launch_probe(probe, page, type)
-    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/lighthouse?url=#{page.url}&type=#{type}&token=#{probe['token']}")
+    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/lighthouse?url=#{page.url}&type=#{type}&emulation=#{page.device}&token=#{probe['token']}")
     send_request(uri)
   end
 

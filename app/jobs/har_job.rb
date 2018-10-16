@@ -45,7 +45,7 @@ class HarJob < StatisticsJob
   end
 
   def launch_probe(probe, page)
-    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/har?url=#{page.url}&token=#{probe['token']}")
+    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/har?url=#{page.url}&emulation=#{page.device}&token=#{probe['token']}")
     send_request(uri)
   end
 

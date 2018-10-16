@@ -1,25 +1,26 @@
 require 'chronic_duration'
-
 # == Schema Information
 #
 # Table name: pages
 #
-#  id                      :integer          not null, primary key
-#  name                    :string
-#  url                     :string
+#  id                      :bigint(8)        not null, primary key
+#  name                    :string(255)
+#  url                     :string(255)
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  screenshot_file_name    :string
-#  screenshot_content_type :string
+#  screenshot_file_name    :string(255)
+#  screenshot_content_type :string(255)
 #  screenshot_file_size    :integer
 #  screenshot_updated_at   :datetime
-#  uptime_keyword          :string
-#  uptime_keyword_type     :string
-#  slack_webhook           :string
-#  slack_channel           :string
+#  uptime_keyword          :string(255)
+#  uptime_keyword_type     :string(255)
+#  slack_webhook           :string(255)
+#  slack_channel           :string(255)
 #  mail_notify             :boolean          default(TRUE)
 #  slack_notify            :boolean          default(FALSE)
+#  uptime_status           :integer          default(0)
 #  push_notify             :boolean          default(TRUE)
+#  device                  :integer          default("mobile")
 #
 
 class Page < ActiveRecord::Base
@@ -36,6 +37,8 @@ class Page < ActiveRecord::Base
   has_many :budgets, dependent: :destroy
   has_many :page_members, dependent: :destroy
 
+  enum device: [ :mobile, :desktop ]
+
   #
   # Validations
   #
@@ -46,7 +49,7 @@ class Page < ActiveRecord::Base
   validates :slack_channel, presence: true, if: Proc.new { |a| a.slack_notify? }
 
   def as_json(options={})
-    super({only: [:id, :name, :url, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :push_notify, :slack_webhook, :slack_channel, :uptime_status, :created_at, :updated_at]}.merge(options || {}))
+    super({only: [:id, :name, :url, :device, :uptime_keyword, :uptime_keyword_type, :mail_notify, :slack_notify, :push_notify, :slack_webhook, :slack_channel, :uptime_status, :created_at, :updated_at]}.merge(options || {}))
   end
 
   def last_downtime_duration

@@ -36,7 +36,7 @@ class ScreenshotJob
   end
 
   def launch_probe(probe, page)
-    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/screenshot?url=#{page.url}&token=#{probe['token']}")
+    uri = URI.parse("http://#{probe['host']}:#{probe['port']}/screenshot?url=#{page.url}&emulation=#{page.device}&token=#{probe['token']}")
     request = Net::HTTP::Get.new(uri.request_uri)
     response = Net::HTTP.start(uri.host, uri.port) do |http|
       http.read_timeout = 120

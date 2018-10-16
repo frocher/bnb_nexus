@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180512191028) do
+ActiveRecord::Schema.define(version: 20181016193336) do
 
   create_table "budgets", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "page_id", null: false
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 20180512191028) do
     t.boolean "slack_notify", default: false
     t.integer "uptime_status", default: 0
     t.boolean "push_notify", default: true
+    t.integer "device", default: 0
   end
 
   create_table "subscriptions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
