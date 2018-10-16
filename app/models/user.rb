@@ -2,32 +2,30 @@
 #
 # Table name: users
 #
-#  id                     :integer          not null, primary key
-#  provider               :string           not null
-#  uid                    :string           default(""), not null
+#  id                     :bigint(8)        not null, primary key
+#  provider               :string(255)      not null
+#  uid                    :string(255)      default(""), not null
 #  admin                  :boolean          default(FALSE)
-#  encrypted_password     :string           default(""), not null
-#  reset_password_token   :string
+#  encrypted_password     :string(255)      default(""), not null
+#  reset_password_token   :string(255)
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
 #  sign_in_count          :integer          default(0), not null
 #  current_sign_in_at     :datetime
 #  last_sign_in_at        :datetime
-#  current_sign_in_ip     :string
-#  last_sign_in_ip        :string
-#  confirmation_token     :string
+#  current_sign_in_ip     :string(255)
+#  last_sign_in_ip        :string(255)
+#  confirmation_token     :string(255)
 #  confirmed_at           :datetime
 #  confirmation_sent_at   :datetime
-#  unconfirmed_email      :string
-#  name                   :string
-#  bio                    :string
-#  email                  :string
-#  tokens                 :text
-#  created_at             :datetime
-#  updated_at             :datetime
-#  slack_webhook          :string
-#  slack_channel          :string
-#  image                  :string
+#  unconfirmed_email      :string(255)
+#  name                   :string(255)
+#  bio                    :string(255)
+#  email                  :string(255)
+#  tokens                 :text(65535)
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  image                  :string(255)
 #
 
 class User < ActiveRecord::Base

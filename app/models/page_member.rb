@@ -2,10 +2,10 @@
 #
 # Table name: page_members
 #
-#  id         :integer          not null, primary key
+#  id         :bigint(8)        not null, primary key
 #  user_id    :integer          not null
 #  page_id    :integer          not null
-#  role       :integer          default(0), not null
+#  role       :integer          default("guest"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
