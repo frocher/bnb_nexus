@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.4'
+gem 'rails', '~> 5.1.6'
 
 gem 'rack-cors', :require => 'rack/cors'
 
@@ -30,10 +30,10 @@ gem 'slim'
 gem 'chronic_duration'
 
 # Auth
-gem 'devise_token_auth', '>= 0.1.42'
-gem 'omniauth-github'
-gem 'omniauth-facebook'
-gem 'omniauth-google-oauth2'
+gem 'devise_token_auth', '>= 0.1.43'
+gem 'omniauth-github', '>= 1.3.0'
+gem 'omniauth-facebook', '>= 5.0.0'
+gem 'omniauth-google-oauth2', '>= 0.5.3'
 gem 'six'
 
 # Configuration
