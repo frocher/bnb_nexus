@@ -26,7 +26,10 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  image                  :string(255)
+#  subscription           :string(255)
 #
+
+require "stripe"
 
 class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
@@ -57,6 +60,27 @@ class User < ActiveRecord::Base
     ApplicationController.helpers.avatar_icon(email)
   end
 
+  def subscription_data
+    resu = Hash.new
+    if subscription.nil?
+      resu["pages"] = Rails.configuration.x.free_plan.pages
+      resu["members"] = Rails.configuration.x.free_plan.members
+      resu["uptime"] = Rails.configuration.x.free_plan.uptime
+    else
+      Stripe.api_key = Figaro.env.stripe_secret_key
+      stripe_subscription = Stripe::Subscription.retrieve(subscription)
+      resu["plan"] = stripe_subscription.plan.id
+
+      stripe_product = Stripe::Product.retrieve(stripe_subscription.plan.product)
+      metadata = stripe_product.metadata
+      resu["pages"] = metadata[:pages]
+      resu["members"] = metadata[:members]
+      resu["uptime"] = metadata[:uptime]
+
+      Rails.logger.info stripe_subscription.to_s
+    end
+    resu
+  end
 
   #
   # Class methods

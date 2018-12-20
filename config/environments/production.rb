@@ -91,4 +91,9 @@ Rails.application.configure do
   config.x.jobs.uptime_interval = "10m"
   config.x.jobs.second_chanche_interval = "30s"
   config.x.jobs.screenshot_interval = "5h"
+
+  # Free plan data
+  config.x.free_plan.pages = 3
+  config.x.free_plan.members = 3
+  config.x.free_plan.uptime = 15
 end
