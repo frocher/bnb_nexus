@@ -5,7 +5,7 @@ class Users::SubscriptionsController < ApplicationController
 
   def show
     return not_found! unless can?(current_user, :read_subscription, @user)
-    render json: @user.subscription_data
+    render json: @user.stripe_subscription
   end
 
   def create
@@ -26,7 +26,7 @@ class Users::SubscriptionsController < ApplicationController
     @user.subscription = subscription.id
     @user.save!
 
-    render json: @user.subscription_data
+    render json: @user.stripe_subscription
   end
 
   def update
@@ -41,7 +41,7 @@ class Users::SubscriptionsController < ApplicationController
     }]
     subscription.save
 
-    render json: @user.subscription_data
+    render json: @user.stripe_subscription
   end
 
   def destroy
@@ -54,7 +54,7 @@ class Users::SubscriptionsController < ApplicationController
     @user.subscription = nil
     @user.save!
 
-    render json: @user.subscription_data
+    render json: @user.stripe_subscription
   end
 
 private
