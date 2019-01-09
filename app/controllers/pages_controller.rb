@@ -41,7 +41,7 @@ class PagesController < ApplicationController
     can_create_page = true
     if Figaro.env.stripe_api_key?
       max_pages = current_user.stripe_subscription["pages"]
-      can_create_page = max_pages > 0 and owned_pages.count < max_pages
+      can_create_page = max_pages > 0 && owned_pages.count < max_pages
     end
 
     if can_create_page

@@ -178,7 +178,7 @@ class UptimeJob < StatisticsJob
   end
 
   def send_slack_message(page, message)
-    unless page.slack_webhook.nil? or page.slack_webhook.blank?
+    unless page.slack_webhook.nil? || page.slack_webhook.blank?
       notifier = Slack::Notifier.new page.slack_webhook, channel: page.slack_channel, username: "jeeves.thebot"
       notifier.ping message
     end

@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
     unless subscription.nil?
       Stripe.api_key = Figaro.env.stripe_secret_key
       subscription_object = Stripe::Subscription.retrieve(subscription)
-      if subscription_object.status != 'canceled' and subscription_object.status != 'unpaid'
+      if subscription_object.status != 'canceled' && subscription_object.status != 'unpaid'
         plan_id = subscription_object.plan.id
       end
     end
