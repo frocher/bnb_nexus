@@ -142,9 +142,7 @@ class UptimeJob < StatisticsJob
   def send_push_message(page, message)
     page.page_members.each do |member|
       user = member.user
-      user.subscriptions.each do |subscription|
-        send_webpush(subscription, page.url, message)
-      end
+      user.subscriptions.each { |subscription| send_webpush(subscription, page.url, message) }
     end
   rescue Exception => e
     Rails.logger.error e.to_s
