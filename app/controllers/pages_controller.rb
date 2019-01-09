@@ -75,7 +75,7 @@ class PagesController < ApplicationController
         end
       end
     else
-      render_api_error!("Your subscription doesn't allow you to create more pages", 403)
+      render_api_error!("Your current subscription doesn't allow you to create more pages", 403)
     end
   end
 
