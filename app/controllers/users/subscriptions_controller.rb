@@ -14,8 +14,8 @@ class Users::SubscriptionsController < ApplicationController
     Stripe.api_key = Figaro.env.stripe_secret_key
 
     customer = Stripe::Customer.create(
-      :email => params[:stripeEmail],
-      :source => params[:stripeToken]
+      email: params[:stripeEmail],
+      source: params[:stripeToken]
     )
 
     subscription = Stripe::Subscription.create({
@@ -41,6 +41,8 @@ class Users::SubscriptionsController < ApplicationController
     }]
     subscription.save
 
+    @user.update_pages_lock
+
     render json: @user.stripe_subscription
   end
 
@@ -53,6 +55,8 @@ class Users::SubscriptionsController < ApplicationController
 
     @user.subscription = nil
     @user.save!
+
+    @user.update_pages_lock
 
     render json: @user.stripe_subscription
   end

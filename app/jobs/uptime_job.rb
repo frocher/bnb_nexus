@@ -14,7 +14,7 @@ class UptimeJob < StatisticsJob
     probe = job.opts[:probe]
     Rails.logger.info "Starting job #{self.class.name} for page #{page_id} on probe #{probe['name']}"
     second_chance = perform(page_id, job.opts[:is_second_chance] || false, probe)
-    delay = second_chance ? Rails.configuration.x.jobs.second_chanche_interval : Rails.configuration.x.jobs.uptime_interval
+    delay = second_chance ? Rails.configuration.x.jobs.second_chanche_interval : page_delay(page_id)
     UptimeJob.schedule_next(delay, job.handler, page_id, second_chance)
   end
 
@@ -67,6 +67,20 @@ class UptimeJob < StatisticsJob
   end
 
   private
+
+  def page_delay(page_id)
+    delay = Rails.configuration.x.jobs.uptime_interval
+
+    ActiveRecord::Base.connection_pool.with_connection do
+      if Figaro.env.stripe_api_key? && Page.exists?(page_id)
+        page = Page.find(page_id)
+        subscription = page.owner.stripe_subscription
+        delay = "#{subscription['uptime']}m"
+      end
+    end
+
+    delay
+  end
 
   def write_metrics(probe, page, status, code, message, content)
     metric = UptimeMetrics.new page_id: page.id, probe: probe["name"]

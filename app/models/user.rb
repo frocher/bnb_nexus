@@ -60,12 +60,19 @@ class User < ActiveRecord::Base
     ApplicationController.helpers.avatar_icon(email)
   end
 
+  def owned_pages
+    Page.joins(:page_members).where(user: self, role: 3).order(:created_at)
+  end
+
   def stripe_subscription
     plan_id = -1
 
     unless subscription.nil?
       Stripe.api_key = Figaro.env.stripe_secret_key
-      plan_id = Stripe::Subscription.retrieve(subscription).plan.id
+      subscription_object = Stripe::Subscription.retrieve(subscription)
+      if subscription_object.status != 'canceled' and subscription_object.status != 'unpaid'
+        plan_id = subscription_object.plan.id
+      end
     end
 
     plan = find_plan(plan_id)
@@ -76,6 +83,18 @@ class User < ActiveRecord::Base
     resu["uptime"] = plan.uptime
 
     resu
+  end
+
+  def update_pages_lock()
+    if Figaro.env.stripe_api_key?
+      max_pages = @user.stripe_subscription["pages"]
+      index = 0
+      owned_pages.each do |page|
+        page.locked = index >= max_pages
+        page.save
+        index += 1
+      end
+    end    
   end
 
   #
