@@ -60,26 +60,41 @@ class User < ActiveRecord::Base
     ApplicationController.helpers.avatar_icon(email)
   end
 
-  def subscription_data
-    resu = Hash.new
-    if subscription.nil?
-      resu["pages"] = Rails.configuration.x.free_plan.pages
-      resu["members"] = Rails.configuration.x.free_plan.members
-      resu["uptime"] = Rails.configuration.x.free_plan.uptime
-    else
+  def owned_pages
+    Page.joins(:page_members).where(user: self, role: 3).order(:created_at)
+  end
+
+  def stripe_subscription
+    plan_id = -1
+
+    unless subscription.nil?
       Stripe.api_key = Figaro.env.stripe_secret_key
-      stripe_subscription = Stripe::Subscription.retrieve(subscription)
-      resu["plan"] = stripe_subscription.plan.id
-
-      stripe_product = Stripe::Product.retrieve(stripe_subscription.plan.product)
-      metadata = stripe_product.metadata
-      resu["pages"] = metadata[:pages]
-      resu["members"] = metadata[:members]
-      resu["uptime"] = metadata[:uptime]
-
-      Rails.logger.info stripe_subscription.to_s
+      subscription_object = Stripe::Subscription.retrieve(subscription)
+      if subscription_object.status != 'canceled' && subscription_object.status != 'unpaid'
+        plan_id = subscription_object.plan.id
+      end
     end
+
+    plan = find_plan(plan_id)
+    resu = Hash.new
+    resu["plan"] = plan_id
+    resu["pages"] = plan.pages
+    resu["members"] = plan.members
+    resu["uptime"] = plan.uptime
+
     resu
+  end
+
+  def update_pages_lock()
+    if Figaro.env.stripe_api_key?
+      max_pages = @user.stripe_subscription["pages"]
+      index = 0
+      owned_pages.each do |page|
+        page.locked = index >= max_pages
+        page.save
+        index += 1
+      end
+    end    
   end
 
   #
@@ -102,6 +117,11 @@ class User < ActiveRecord::Base
 
 
   private
+
+  def find_plan(id)
+    plans = Rails.application.config.stripe_plans.select( |o| o.id == id )
+    plans.first
+  end
 
   # First user is always super admin
   def record_first_admin

@@ -1,0 +1,32 @@
+version: "3"
+services:
+  api:
+    build: .
+    container_name: botnbot_nexus    
+    command: bundle exec rails s -b 0.0.0.0
+    volumes:
+      - .:/myapp
+    ports:
+      - "3000:3000"
+    links:
+      - db
+      - influx
+      - mail
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      DB_NAME: 'botnbot'
+
+  mail:
+    image: namshi/smtp
+
+  influx:
+    image: influxdb:1.5
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb
+    environment:
+      INFLUXDB_DB: 'botnbot'
+

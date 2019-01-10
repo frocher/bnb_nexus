@@ -8,9 +8,7 @@ class BudgetJob
   def perform
     ActiveRecord::Base.connection_pool.with_connection do
       users = User.all
-      users.each do |user|
-        process_user(user)
-      end
+      users.each { |user| process_user(user) }
     end
   end
 
@@ -21,9 +19,7 @@ class BudgetJob
       @context = OpenStruct.new
       @context.budgets = []
 
-      pages.each do |page|
-        @context.budgets += construct_page(page)
-      end
+      pages.each { |page| @context.budgets += construct_page(page) }
 
       send_mail(user, generate_title) unless @context.budgets.empty?
     end

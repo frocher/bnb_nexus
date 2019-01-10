@@ -100,7 +100,7 @@ class Pages::MembersController < ApplicationController
     logger.error "Entrez ici"
     page.page_members.each do |current|
       logger.error current.to_s
-      if current.id != member.id and current.role == "admin"
+      if current.id != member.id && current.role == "admin"
         found_admin = true
         break
       end

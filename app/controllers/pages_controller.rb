@@ -38,33 +38,44 @@ class PagesController < ApplicationController
   end
 
   def create
-    Page.transaction do
-      begin
-        @page = Page.new
+    can_create_page = true
+    if Figaro.env.stripe_api_key?
+      max_pages = current_user.stripe_subscription["pages"]
+      can_create_page = max_pages > 0 && owned_pages.count < max_pages
+    end
 
-        @page.name = params[:name]
-        @page.url = params[:url]
-        @page.device = params[:device]
-        @page.uptime_status = 1
-        @page.uptime_keyword = ""
-        @page.uptime_keyword_type = "presence"
-        @page.mail_notify = true
-        @page.push_notify = true
-        @page.slack_notify = false
-        @page.slack_webhook = ""
-        @page.slack_channel = ""
-        @page.save!
+    if can_create_page
+      Page.transaction do
+        begin
+          @page = Page.new
 
-        member = PageMember.new
-        member.page = @page
-        member.user = current_user
-        member.role = :admin
-        member.save!
+          @page.name = params[:name]
+          @page.url = params[:url]
+          @page.device = params[:device]
+          @page.uptime_status = 1
+          @page.lock = false
+          @page.uptime_keyword = ""
+          @page.uptime_keyword_type = "presence"
+          @page.mail_notify = true
+          @page.push_notify = true
+          @page.slack_notify = false
+          @page.slack_webhook = ""
+          @page.slack_channel = ""
+          @page.save!
 
-        render_page
-      rescue ActiveRecord::RecordInvalid
-        render json: {errors: @page.errors}, status: 422
+          member = PageMember.new
+          member.page = @page
+          member.user = current_user
+          member.role = :admin
+          member.save!
+
+          render_page
+        rescue ActiveRecord::RecordInvalid
+          render json: {errors: @page.errors}, status: 422
+        end
       end
+    else
+      render_api_error!("Your current subscription doesn't allow you to create more pages", 403)
     end
   end
 
