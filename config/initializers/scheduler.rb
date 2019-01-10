@@ -23,7 +23,6 @@ scheduler.cron('0 3 * * *', BudgetJob.new)
 # Run daily page lock every day at 2am
 scheduler.cron('0 2 * * *', LockJob.new)
 
-
 # Create jobs
 Page.all.each do |page|
   page.init_jobs

@@ -94,7 +94,7 @@ class User < ActiveRecord::Base
         page.save
         index += 1
       end
-    end    
+    end
   end
 
   #
@@ -119,7 +119,7 @@ class User < ActiveRecord::Base
   private
 
   def find_plan(id)
-    plans = Rails.application.config.stripe_plans.select( |o| o.id == id )
+    plans = Rails.application.config.stripe_plans.select{ |o| o.id == id }
     plans.first
   end
 

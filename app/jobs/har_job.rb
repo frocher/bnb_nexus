@@ -98,7 +98,7 @@ class HarJob < StatisticsJob
   def find_mime_type(url, mime_type)
     return "other" if mime_type.nil? || url.nil?
     return "html"  if mime_type.include?("text/html")
-    return "js"    if mime_type.include?("javascript") || mime_type.include? "/ecmascript"
+    return "js"    if mime_type.include?("javascript") || mime_type.include?("/ecmascript")
     return "css"   if mime_type.include?("text/css")
     return "image" if mime_type.include?("image/")
     return "font"  if mime_type.include?("font-") || mime_type.include?("ms-font") || mime_type.include?("font/")
