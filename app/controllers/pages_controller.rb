@@ -38,44 +38,37 @@ class PagesController < ApplicationController
   end
 
   def create
-    can_create_page = true
-    if Figaro.env.stripe_api_key?
-      max_pages = current_user.stripe_subscription["pages"]
-      can_create_page = max_pages > 0 && owned_pages.count < max_pages
-    end
+    # Check subscription rights
+    return render_api_error!("Your current subscription doesn't allow you to create more pages", 403) unless can_create_page
 
-    if can_create_page
-      Page.transaction do
-        begin
-          @page = Page.new
+    Page.transaction do
+      begin
+        @page = Page.new
 
-          @page.name = params[:name]
-          @page.url = params[:url]
-          @page.device = params[:device]
-          @page.uptime_status = 1
-          @page.lock = false
-          @page.uptime_keyword = ""
-          @page.uptime_keyword_type = "presence"
-          @page.mail_notify = true
-          @page.push_notify = true
-          @page.slack_notify = false
-          @page.slack_webhook = ""
-          @page.slack_channel = ""
-          @page.save!
+        @page.name = params[:name]
+        @page.url = params[:url]
+        @page.device = params[:device]
+        @page.uptime_status = 1
+        @page.lock = false
+        @page.uptime_keyword = ""
+        @page.uptime_keyword_type = "presence"
+        @page.mail_notify = true
+        @page.push_notify = true
+        @page.slack_notify = false
+        @page.slack_webhook = ""
+        @page.slack_channel = ""
+        @page.save!
 
-          member = PageMember.new
-          member.page = @page
-          member.user = current_user
-          member.role = :admin
-          member.save!
+        member = PageMember.new
+        member.page = @page
+        member.user = current_user
+        member.role = :admin
+        member.save!
 
-          render_page
-        rescue ActiveRecord::RecordInvalid
-          render json: {errors: @page.errors}, status: 422
-        end
+        render_page
+      rescue ActiveRecord::RecordInvalid
+        render json: {errors: @page.errors}, status: 422
       end
-    else
-      render_api_error!("Your current subscription doesn't allow you to create more pages", 403)
     end
   end
 
@@ -120,6 +113,15 @@ class PagesController < ApplicationController
   end
 
 private
+
+  def can_create_page
+    resu = true
+    if Figaro.env.stripe_api_key?
+      max_pages = current_user.stripe_subscription["pages"]
+      resu = max_pages > 0 && owned_pages.count < max_pages
+    end
+    resu
+  end
 
   def render_page
     can_edit  = can?(current_user, :update_page, @page)
