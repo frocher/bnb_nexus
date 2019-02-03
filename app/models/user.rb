@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
   end
 
   def owned_pages
-    Page.joins(:page_members).where(user: self, role: 3).order(:created_at)
+    Page.joins(:page_members).where(page_members: {user: self, role: 3}).order(:created_at)
   end
 
   def stripe_subscription
@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
     resu["pages"] = plan["pages"]
     resu["members"] = plan["members"]
     resu["uptime"] = plan["uptime"]
-    resu["current"] = owned_pages.count
+    resu["ownedPages"] = owned_pages.count
 
     resu
   end
