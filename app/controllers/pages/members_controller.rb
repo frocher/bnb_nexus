@@ -6,7 +6,7 @@ class Pages::MembersController < ApplicationController
     render json: @page.page_members
   end
 
-  def create   
+  def create
     @page = Page.find(params[:page_id])
 
     # Check abilities
@@ -104,7 +104,7 @@ class Pages::MembersController < ApplicationController
 
   def can_create_member(page)
     resu = true
-    if Figaro.env.stripe_api_key?
+    if Figaro.env.stripe_public_key?
       max_members = current_user.stripe_subscription["members"]
       resu = max_members > 0 && page.members.count < max_members
     end

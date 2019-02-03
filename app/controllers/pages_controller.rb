@@ -116,7 +116,7 @@ private
 
   def can_create_page
     resu = true
-    if Figaro.env.stripe_api_key?
+    if Figaro.env.stripe_public_key?
       max_pages = current_user.stripe_subscription["pages"]
       resu = max_pages > 0 && owned_pages.count < max_pages
     end
