@@ -77,7 +77,7 @@ class User < ActiveRecord::Base
 
     plan = find_plan(plan_id)
     resu = Hash.new
-    resu["plan"] = plan_id
+    resu["planId"] = plan_id
     resu["pages"] = plan["pages"]
     resu["members"] = plan["members"]
     resu["uptime"] = plan["uptime"]
