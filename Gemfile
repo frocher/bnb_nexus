@@ -30,7 +30,7 @@ gem 'slim'
 gem 'chronic_duration'
 
 # Auth
-gem 'devise_token_auth', '>= 0.1.42'
+gem 'devise_token_auth', '>= 1.1.2'
 gem 'omniauth-github'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
