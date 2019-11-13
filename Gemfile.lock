@@ -240,7 +240,7 @@ DEPENDENCIES
   annotate
   byebug
   chronic_duration
-  devise_token_auth (>= 0.1.42)
+  devise_token_auth (>= 1.0.0)
   figaro
   influxer
   kaminari (>= 1.1.1)
@@ -253,7 +253,7 @@ DEPENDENCIES
   paperclip (>= 5.2.1)
   puma (~> 3.7)
   rack-cors
-  rails (~> 5.1.4)
+  rails (~> 5.1.6, >= 5.1.6.2)
   rufus-scheduler
   six
   slack-notifier
