@@ -7,7 +7,7 @@ end
 
 gem 'rails', '~> 5.1.4'
 
-gem 'rack-cors', :require => 'rack/cors'
+gem 'rack-cors', '>= 1.0.5'
 
 # Database access
 gem 'mysql2'
