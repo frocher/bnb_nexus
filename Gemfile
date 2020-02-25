@@ -5,7 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.4'
+gem 'rails', '~> 5.1.6', '>= 5.1.6.2'
 
 gem 'rack-cors', :require => 'rack/cors'
 
@@ -30,7 +30,7 @@ gem 'slim'
 gem 'chronic_duration'
 
 # Auth
-gem 'devise_token_auth', '>= 0.1.42'
+gem 'devise_token_auth', '>= 1.0.0'
 gem 'omniauth-github'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
@@ -59,7 +59,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'letter_opener'
-  gem 'annotate'
+  gem 'annotate', '>= 2.7.4'
 end
 
 gem 'tzinfo-data'
